@@ -1,16 +1,15 @@
-﻿namespace FamilyManager.Service.Utils
+﻿namespace Linq.PredicateBuilder
 {
     using System;
     using System.Linq;
     using System.Linq.Expressions;
     using JetBrains.Annotations;
-    using Linq.PredicateBuilder;
 
     /// <summary>
-    /// Динамический построитель последовательных запросов.
+    /// Predicate extensions.
     /// </summary>
     [PublicAPI]
-    public static class PredicateBuilder
+    public static class PredicateExtensions
     {
         /// <summary>
         /// Combines the first predicate with the second using the logical "and".
