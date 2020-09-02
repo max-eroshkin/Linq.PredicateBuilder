@@ -14,7 +14,7 @@ namespace BuilderTests
         [Fact]
         public void Any()
         {
-            IOperationStrategy strategy = new OperationStrategy(BuilderOptions.CaseSensitive | BuilderOptions.UseDefaultInputs);
+            IOperationStrategy strategy = new OperationStrategy(BuilderOptions.IgnoreCase | BuilderOptions.IgnoreDefaultInputs);
 
             var exp1 = strategy.Any<Item, Request>(
                 x => x.Requests,

@@ -1,5 +1,6 @@
 ﻿namespace BuilderTests
 {
+    using System;
     using System.Linq;
     using FluentAssertions;
     using Linq.PredicateBuilder;
@@ -13,7 +14,7 @@
         {
             var result = DataSet.FromBuilder(
                     _ => _.Contains(x => x.Name, "aaAa"),
-                    BuilderOptions.CaseSensitive);
+                    BuilderOptions.None);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
         }
@@ -22,7 +23,8 @@
         public void IgnoreCase()
         {
             var result = DataSet.FromBuilder(
-                    _ => _.Contains(x => x.Name, "aaAa"));
+                    _ => _.Contains(x => x.Name, "aaAa"),
+                    BuilderOptions.IgnoreCase);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
         }
@@ -32,7 +34,7 @@
         {
             var result = DataSet.FromBuilder(
                     _ => _.Contains(x => x.Name, "aaAb"),
-                    BuilderOptions.CaseSensitive);
+                    BuilderOptions.IgnoreCase);
 
             result.Should().BeEmpty();
         }
@@ -42,7 +44,7 @@
         {
             var result = DataSet.FromBuilder(
                 _ => _.Contains(x => x.Name, " aaAa1 "),
-                BuilderOptions.CaseSensitive);
+                BuilderOptions.Trim);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
         }
@@ -75,11 +77,21 @@
         }
 
         [Fact]
+        public void UseNullInput()
+        {
+            Action f = () => DataSet.FromBuilder(
+                _ => _.Contains(x => x.Name, null),
+                BuilderOptions.None);
+
+            f.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void UseDefaultOrEmptyOrWhitespeceInput()
         {
             var resultNull = DataSet.FromBuilder(
-                _ => _.Contains(x => x.Name, null),
-                BuilderOptions.UseDefaultInputs);
+                _ => _.Contains(x => x.Name, "  "),
+                BuilderOptions.None);
 
             resultNull.Should().BeEmpty();
         }

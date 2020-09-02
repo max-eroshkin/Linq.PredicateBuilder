@@ -39,9 +39,11 @@
             _options = options;
         }
 
-        private bool IgnoreDefaults => (_options & BuilderOptions.UseDefaultInputs) == 0;
+        private bool IgnoreDefaults => (_options & BuilderOptions.IgnoreDefaultInputs) != 0;
 
-        private bool IgnoreCase => (_options & BuilderOptions.CaseSensitive) == 0;
+        private bool IgnoreCase => (_options & BuilderOptions.IgnoreCase) != 0;
+
+        private bool TrimStrings => (_options & BuilderOptions.Trim) != 0;
 
         /// <inheritdoc />
         public Expression<Func<TEntity, bool>> Contains<TEntity>(
@@ -50,6 +52,8 @@
         {
             if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
+
+            _ = input ?? throw new ArgumentNullException(nameof(input), "Input cannot be null.");
 
             var filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
@@ -104,7 +108,7 @@
             [CanBeNull] IEnumerable<TValue> input)
         {
             _ = propertyExpression ??
-                throw new ArgumentException("Expression cannot be null", nameof(propertyExpression));
+                throw new ArgumentNullException(nameof(propertyExpression), "Expression cannot be null.");
 
             if (IgnoreDefaults && input?.Any() != true)
                 return null;
@@ -128,7 +132,7 @@
             [CanBeNull] Expression<Func<TValue, bool>> predicate)
         {
             _ = collectionSelector ??
-                throw new ArgumentException("Expression cannot be null", nameof(collectionSelector));
+                throw new ArgumentNullException(nameof(collectionSelector), "Expression cannot be null");
 
             if (predicate == null)
                 return null;
@@ -155,9 +159,15 @@
 
         private string ToLower(string input)
         {
+            if (input == null)
+                return null;
+
+            if (TrimStrings)
+                input = input.Trim();
+
             return IgnoreCase
-                ? input.Trim().ToLower()
-                : input.Trim();
+                ? input.ToLower()
+                : input;
         }
     }
 }
