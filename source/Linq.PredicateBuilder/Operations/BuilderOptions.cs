@@ -9,13 +9,18 @@
     public enum BuilderOptions
     {
         /// <summary>
+        /// IgnoreCase + IgnoreDefaultInputs
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
         /// Ignore case in string operations.
         /// </summary>
-        IgnoreCase = 1,
+        CaseSensitive = 1,
 
         /// <summary>
         /// Ignore default values.
         /// </summary>
-        IgnoreDefault = 2
+        UseDefaultInputs = 2
     }
 }

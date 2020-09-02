@@ -34,21 +34,21 @@
         /// Constructs a strategy,
         /// </summary>
         /// <param name="options">A filtering options</param>
-        public OperationStrategy(BuilderOptions options = 0)
+        public OperationStrategy(BuilderOptions options = BuilderOptions.Default)
         {
             _options = options;
         }
 
-        private bool IgnoreDefault => (_options & BuilderOptions.IgnoreDefault) != 0;
+        private bool IgnoreDefaults => (_options & BuilderOptions.UseDefaultInputs) == 0;
 
-        private bool IgnoreCase => (_options & BuilderOptions.IgnoreCase) != 0;
+        private bool IgnoreCase => (_options & BuilderOptions.CaseSensitive) == 0;
 
         /// <inheritdoc />
         public Expression<Func<TEntity, bool>> Contains<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
         {
-            if (IgnoreDefault && string.IsNullOrWhiteSpace(input))
+            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
 
             var filter = Expression.Lambda<Func<TEntity, bool>>(
@@ -66,7 +66,7 @@
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
         {
-            if (IgnoreDefault && string.IsNullOrWhiteSpace(input))
+            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
 
             var filter = Expression.Lambda<Func<TEntity, bool>>(
@@ -83,7 +83,7 @@
             [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
             TValue input)
         {
-            if (IgnoreDefault && Equals(input, default(TValue)))
+            if (IgnoreDefaults && Equals(input, default(TValue)))
                 return null;
 
             if (typeof(TValue) == typeof(string))
@@ -106,7 +106,7 @@
             _ = propertyExpression ??
                 throw new ArgumentException("Expression cannot be null", nameof(propertyExpression));
 
-            if (IgnoreDefault && input?.Any() != true)
+            if (IgnoreDefaults && input?.Any() != true)
                 return null;
 
             var inputParameter = Expression.Constant(input);

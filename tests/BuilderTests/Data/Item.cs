@@ -3,10 +3,12 @@ namespace BuilderTests.Data
 {
     using System.Collections.Generic;
 
-    public class Family
+    public class Item
     {
         public long Id { get; set; }
 
+        public string Name { get; set; }
+        
         public string Description { get; set; }
 
         public List<Request> Requests { get; set; }
@@ -18,6 +20,6 @@ namespace BuilderTests.Data
 
         public long ApproverId { get; set; }
 
-        public long FamilyId { get; set; }
+        public long ItemId { get; set; }
     }
 }

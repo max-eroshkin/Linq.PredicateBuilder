@@ -21,7 +21,7 @@
         {
             return query.FromBuilder(
                 builder,
-                new OperationStrategy(BuilderOptions.IgnoreCase | BuilderOptions.IgnoreDefault));
+                new OperationStrategy(BuilderOptions.Default));
         }
 
         /// <summary>
@@ -45,6 +45,23 @@
             return expression == null
                 ? query
                 : query.Where(expression);
+        }
+
+        /// <summary>
+        /// Filters a sequence of entities based on a predicate builder.
+        /// </summary>
+        /// <typeparam name="T">Entity type.</typeparam>
+        /// <param name="query">An entity sequence.</param>
+        /// <param name="builder">A predicate builder.</param>
+        /// <param name="options">Builder options</param>
+        public static IQueryable<T> FromBuilder<T>(
+            [NotNull] this IQueryable<T> query,
+            [NotNull] Func<QueryBuilder<T>, QueryBuilderResult<T>> builder,
+            BuilderOptions options)
+        {
+            return query.FromBuilder(
+                builder,
+                new OperationStrategy(options));
         }
     }
 }

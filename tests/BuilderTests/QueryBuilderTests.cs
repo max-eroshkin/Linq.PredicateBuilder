@@ -14,18 +14,18 @@ namespace BuilderTests
         [Fact]
         public void Any()
         {
-            IOperationStrategy strategy = new OperationStrategy(BuilderOptions.IgnoreCase | BuilderOptions.IgnoreDefault);
+            IOperationStrategy strategy = new OperationStrategy(BuilderOptions.CaseSensitive | BuilderOptions.UseDefaultInputs);
 
-            var exp1 = strategy.Any<Family, Request>(
+            var exp1 = strategy.Any<Item, Request>(
                 x => x.Requests,
                 x => x.ApproverId == 3);
 
-            var expression = new QueryBuilder<Family>(strategy).Any(
+            var expression = new QueryBuilder<Item>(strategy).Any(
                     x => x.Requests,
                     i => i.Equals(x => x.ApproverId, 3))
                 .GetExpression();
 
-            Expression<Func<Family, bool>> expression2 = x => x.Requests.Any(x => x.ApproverId == 3);
+            Expression<Func<Item, bool>> expression2 = x => x.Requests.Any(x => x.ApproverId == 3);
             expression.ToString().Should().Be(expression2.ToString());
 
             var filtered = TestData.DataSet.FromBuilder(_ => _
