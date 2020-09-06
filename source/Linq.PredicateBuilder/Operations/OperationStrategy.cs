@@ -66,7 +66,7 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> EqualsIgnoreCase<TEntity>(
+        public Expression<Func<TEntity, bool>> StringEquals<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
         {
@@ -91,7 +91,7 @@
                 return null;
 
             if (typeof(TValue) == typeof(string))
-                return EqualsIgnoreCase(propertyExpression as Expression<Func<TEntity, string>>, input as string);
+                return StringEquals(propertyExpression as Expression<Func<TEntity, string>>, input as string);
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Equal(
@@ -113,14 +113,21 @@
             if (IgnoreDefaults && input?.Any() != true)
                 return null;
 
-            var inputParameter = Expression.Constant(input);
+            _ = input ?? throw new ArgumentNullException(nameof(input), "Input cannot be null.");
+
+            var inputParameter = Expression.Constant(
+                typeof(TValue) == typeof(string)
+                    ? (IEnumerable<TValue>)((IEnumerable<string>)input).Select(x => ToLower(x))
+                    : input);
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
                     null,
                     CollectionContainsMethod.MakeGenericMethod(typeof(TValue)),
                     inputParameter,
-                    propertyExpression.Body),
+                    typeof(TValue) == typeof(string)
+                        ? ToLower(propertyExpression.Body)
+                        : propertyExpression.Body),
                 propertyExpression.Parameters);
 
             return filter;

@@ -28,7 +28,7 @@
         /// <param name="input">string to find</param>
         /// <typeparam name="TEntity">Entity type</typeparam>
         /// <returns></returns>
-        Expression<Func<TEntity, bool>> EqualsIgnoreCase<TEntity>(
+        Expression<Func<TEntity, bool>> StringEquals<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
             string input);
 
