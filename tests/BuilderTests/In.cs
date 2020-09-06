@@ -11,25 +11,6 @@
     public class In
     {
         [Fact]
-        public void InTest()
-        {
-            var set = new List<long> { 1, 2, 3 };
-            var ids = new List<long> { 2 };
-
-            var filtered = set.AsQueryable().FromBuilder(_ => _
-                .In(x => x, ids)).ToList();
-            filtered.Should().BeEquivalentTo(ids);
-
-            var nullFiltered = set.AsQueryable().FromBuilder(_ => _
-                .In(x => x, null)).ToList();
-            nullFiltered.Should().BeEquivalentTo(set);
-
-            var emptyFiltered = set.AsQueryable().FromBuilder(_ => _
-                .In(x => x, Array.Empty<long>())).ToList();
-            emptyFiltered.Should().BeEquivalentTo(set);
-        }
-
-        [Fact]
         public void CaseSensitive()
         {
             var result = DataSet.FromBuilder(
