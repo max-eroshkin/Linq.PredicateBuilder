@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Nuke.Common;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -14,9 +15,15 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
+[GitHubActions(
+    "CI",
+    GitHubActionsImage.Ubuntu1804,
+    OnPullRequestBranches = new[] { "develop", "master" },
+    OnPushBranches = new[] { "develop", "master" },
+    InvokedTargets = new[] { nameof(Test) })]
 class Build : NukeBuild
 {
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main() => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -59,5 +66,4 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoBuild());
         });
-
 }
