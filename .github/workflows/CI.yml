@@ -22,11 +22,13 @@ on:
       - develop
       - master
       - releases/**
+      - hotfix/**
   pull_request:
     branches:
       - develop
       - master
       - releases/**
+      - hotfix/**
 
 jobs:
   ubuntu-18_04:
