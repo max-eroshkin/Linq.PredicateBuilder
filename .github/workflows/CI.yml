@@ -21,10 +21,12 @@ on:
     branches:
       - develop
       - master
+      - releases/**
   pull_request:
     branches:
       - develop
       - master
+      - releases/**
 
 jobs:
   ubuntu-18_04:
