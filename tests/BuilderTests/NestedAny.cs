@@ -12,7 +12,7 @@
         public void NestedIn()
         {
             var requestIdList = new long[] { 2, 3 };
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Any(p => p.Requests, n => n.In(x => x.Id, requestIdList)));
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Requests.Any(n => requestIdList.Contains(n.Id))));
@@ -22,7 +22,7 @@
         public void NestedInEmpty()
         {
             var requestIdList = new long[] { -2, -1 };
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Any(p => p.Requests, n => n.In(x => x.Id, requestIdList)));
 
             result.Should().BeEmpty();
@@ -32,7 +32,7 @@
         public void IgnoreDefault()
         {
             long[] requestIdList = null;
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Any(p => p.Requests, n => n.In(x => x.Id, requestIdList)));
 
             result.Should().BeEquivalentTo(DataSet);

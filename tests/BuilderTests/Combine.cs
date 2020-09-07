@@ -9,9 +9,9 @@
     public class Combine
     {
         [Fact]
-        void IgnoreCase()
+        public void IgnoreCase()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Where(x => x.Id > 1)
                     .And.Contains(x => x.Name, "BAB"))
                 .ToList();
@@ -20,9 +20,9 @@
         }
 
         [Fact]
-        void IgnoreCaseIgnoreDefault()
+        public void IgnoreCaseIgnoreDefault()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Where(x => x.Id > 1)
                     .And.Contains(x => x.Name, null))
                 .ToList();

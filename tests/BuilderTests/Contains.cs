@@ -12,7 +12,7 @@
         [Fact]
         public void CaseSensitive()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Contains(x => x.Name, "aaAa"),
                     BuilderOptions.None);
 
@@ -22,7 +22,7 @@
         [Fact]
         public void IgnoreCase()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Contains(x => x.Name, "aaAa"),
                     BuilderOptions.IgnoreCase);
 
@@ -32,7 +32,7 @@
         [Fact]
         public void Empty()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Contains(x => x.Name, "aaAb"),
                     BuilderOptions.IgnoreCase);
 
@@ -42,7 +42,7 @@
         [Fact]
         public void TrimInput()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Contains(x => x.Name, " aaAa1 "),
                 BuilderOptions.Trim);
 
@@ -52,7 +52,7 @@
         [Fact]
         public void IgnoreNullInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Contains(x => x.Name, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -61,7 +61,7 @@
         [Fact]
         public void IgnoreEmptyInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Contains(x => x.Name, string.Empty));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -70,7 +70,7 @@
         [Fact]
         public void IgnoreWhitespaceInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Contains(x => x.Name, " "));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -79,7 +79,7 @@
         [Fact]
         public void UseNullInput()
         {
-            Action f = () => DataSet.FromBuilder(
+            Action f = () => DataSet.Build(
                 _ => _.Contains(x => x.Name, null),
                 BuilderOptions.None);
 
@@ -89,7 +89,7 @@
         [Fact]
         public void UseDefaultOrEmptyOrWhitespeceInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                 _ => _.Contains(x => x.Name, "  "),
                 BuilderOptions.None);
 

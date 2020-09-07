@@ -9,9 +9,9 @@
     public class Where
     {
         [Fact]
-        void NumberGt()
+        public void NumberGt()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Where(x => x.Id > 1));
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id > 1));

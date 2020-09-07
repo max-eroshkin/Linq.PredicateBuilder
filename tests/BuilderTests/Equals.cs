@@ -11,7 +11,7 @@
         [Fact]
         public void CaseSensitive()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Equals(x => x.Name, "aaAa1"),
                     BuilderOptions.None);
 
@@ -21,7 +21,7 @@
         [Fact]
         public void CaseSensitiveEmpty()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Equals(x => x.Name, "aAAa1"),
                     BuilderOptions.None);
 
@@ -31,7 +31,7 @@
         [Fact]
         public void IgnoreCase()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Equals(x => x.Name, "aAAa1"),
                     BuilderOptions.IgnoreCase);
 
@@ -41,7 +41,7 @@
         [Fact]
         public void IgnoreCaseEmpty()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                     _ => _.Equals(x => x.Name, "aaAb3"),
                     BuilderOptions.IgnoreCase);
 
@@ -51,7 +51,7 @@
         [Fact]
         public void TrimInput()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Equals(x => x.Name, " aaAa1 "),
                 BuilderOptions.Trim);
 
@@ -61,7 +61,7 @@
         [Fact]
         public void NonString()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.Equals(x => x.ParentId, 1));
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 3));
@@ -70,7 +70,7 @@
         [Fact]
         public void IgnoreNullStringInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Equals(x => x.Name, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -79,7 +79,7 @@
         [Fact]
         public void IgnoreNullLongInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Equals(x => x.ParentId, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -88,7 +88,7 @@
         [Fact]
         public void IgnoreEmptyInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Equals(x => x.Name, string.Empty));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -97,7 +97,7 @@
         [Fact]
         public void IgnoreWhitespaceInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                     _ => _.Equals(x => x.Name, " "));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -106,7 +106,7 @@
         [Fact]
         public void UseDefaultOrEmptyOrWhitespeceInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                 _ => _.Equals(x => x.Name, null),
                 BuilderOptions.None);
 
@@ -116,7 +116,7 @@
         [Fact]
         public void UseDefaulNonStringInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                 _ => _.Equals(x => x.ParentId, null),
                 BuilderOptions.None);
 

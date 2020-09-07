@@ -5,9 +5,11 @@
 
     public static class TestData
     {
+        public static readonly IQueryable<Item> DataSet;
+
         static TestData()
         {
-            dataSet = new List<Item>
+            DataSet = new List<Item>
             {
                 new Item { Id = 1, Name = "aaAa1", ParentId = null, Description = "1", Requests = new List<Request> { new Request { ApproverId = 1 } } },
                 new Item { Id = 2, Name = "aAaa2", ParentId = null, Description = "2", Requests = new List<Request> { new Request { ApproverId = 2 } } },
@@ -16,8 +18,6 @@
             }.AsQueryable();
         }
 
-        private static IQueryable<Item> dataSet;
-
-        public static IQueryable<Item> DataSet => dataSet;
+        ////public static IQueryable<Item> DataSet => _dataSet;
     }
 }

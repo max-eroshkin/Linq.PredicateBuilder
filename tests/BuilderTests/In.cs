@@ -12,7 +12,7 @@
         [Fact]
         public void CaseSensitive()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.Name, new[] { "aaAa1", "baBa" }),
                 BuilderOptions.None);
 
@@ -22,7 +22,7 @@
         [Fact]
         public void CaseSensitiveEmpty()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.Name, new[] { " baBa" }),
                 BuilderOptions.None);
 
@@ -32,7 +32,7 @@
         [Fact]
         public void IgnoreCase()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.Name, new[] { "aaAa1", "baBa" }),
                 BuilderOptions.IgnoreCase).ToList();
 
@@ -42,7 +42,7 @@
         [Fact]
         public void IgnoreCaseEmpty()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.Name, new[] { "baBae" }),
                 BuilderOptions.IgnoreCase);
 
@@ -52,7 +52,7 @@
         [Fact]
         public void TrimInput()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.Name, new[] { " aaAa1", "baBa  " }),
                 BuilderOptions.Trim);
 
@@ -62,7 +62,7 @@
         [Fact]
         public void NonString()
         {
-            var result = DataSet.FromBuilder(
+            var result = DataSet.Build(
                 _ => _.In(x => x.ParentId, new long?[] { 1 }));
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 3));
@@ -71,7 +71,7 @@
         [Fact]
         public void IgnoreNullStringInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                 _ => _.In(x => x.Name, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -80,7 +80,7 @@
         [Fact]
         public void IgnoreNullLongInput()
         {
-            var resultNull = DataSet.FromBuilder(
+            var resultNull = DataSet.Build(
                 _ => _.In(x => x.ParentId, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
@@ -89,7 +89,7 @@
         [Fact]
         public void UseNullInput()
         {
-            Action f = () => DataSet.FromBuilder(
+            Action f = () => DataSet.Build(
                 _ => _.In(x => x.Name, null),
                 BuilderOptions.None);
 

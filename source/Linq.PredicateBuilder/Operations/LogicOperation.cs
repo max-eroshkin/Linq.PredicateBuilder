@@ -104,7 +104,7 @@
         /// Добавляет логическую операцию только при выполнении услович
         /// </summary>
         /// <param name="condition">Условие добавления операции</param>
-        public ILogicOperation<TEntity> Conditional(bool condition)
+        public LogicOperation<TEntity> Conditional(bool condition)
         {
             return new ConditionOperation(Operation, condition, Strategy);
         }
