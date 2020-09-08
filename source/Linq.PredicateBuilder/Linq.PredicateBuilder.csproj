@@ -4,4 +4,34 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Include="..\Annotations.cs">
+        <Link>Annotations.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+        <Authors>Max Eroshkin</Authors>
+        <Product>Linq.PredicateBuilder</Product>
+        <Description>Data Access Layer Library</Description>
+        <PackageTags>Linq Where Filter Predicate Expression Fluent Builder</PackageTags>
+        <PackageId>Linq.PredicateBuilder</PackageId>
+        <PackageProjectUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
+        <PackageReleaseNotes>Predicate builder added</PackageReleaseNotes>
+    </PropertyGroup>
+
 </Project>
