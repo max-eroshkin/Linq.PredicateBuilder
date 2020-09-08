@@ -18,8 +18,8 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "CI",
     GitHubActionsImage.Ubuntu1804,
-    OnPullRequestBranches = new[] { "develop", "master", "releases/**", "hotfix/**" },
-    OnPushBranches = new[] { "develop", "master", "releases/**", "hotfix/**" },
+    OnPullRequestBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
+    OnPushBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
     InvokedTargets = new[] { nameof(Test) })]
 class Build : NukeBuild
 {
