@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <Version>0.1-dev003</Version>
+        <Version>0.1.0</Version>
         <Authors>Max Eroshkin</Authors>
         <Product>Linq.PredicateBuilder</Product>
         <Description>Data Access Layer Library</Description>
