@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="builderResult">Промежуточный билдер выражения</param>
         /// <param name="strategy">A filtering strategy.</param>
-        protected LogicOperation(QueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
+        protected LogicOperation(IAndOrQueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
             : this(strategy)
         {
             BuilderResult = builderResult;
@@ -35,7 +35,7 @@
         /// <summary>
         /// Промежуточный билдер
         /// </summary>
-        protected QueryBuilderResult<TEntity> BuilderResult { get; }
+        protected IAndOrQueryBuilderResult<TEntity> BuilderResult { get; }
 
         /// <summary>
         /// A filtering strategy.
@@ -115,7 +115,7 @@
         /// <typeparam name="TValue">ttt</typeparam>
         protected IAndOrQueryBuilderResult<TEntity> AnyInternal<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
+            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
@@ -132,7 +132,7 @@
         /// </summary>
         /// <param name="builder">Inner builder.</param>
         protected IAndOrQueryBuilderResult<TEntity> BracketsInternal(
-            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));

@@ -5,63 +5,63 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Операция логического "И"
+    /// Операция логического "Или"
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности</typeparam>
-    internal class AndOperation<TEntity> : LogicOperation<TEntity>, IAndLogicOperation<TEntity>
+    internal class OrOperation<TEntity> : LogicOperation<TEntity>, IOrLogicOperation<TEntity>
     {
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="builderResult">Промежуточный билдер</param>
         /// <param name="strategy">A filtering strategy.</param>
-        public AndOperation(QueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
+        public OrOperation(QueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
             : base(builderResult, strategy)
         {
         }
 
         /// <inheritdoc/>
-        public IAndLogicOperation<TEntity> Not => new NotAndOperation<TEntity>(Operation, Strategy);
+        IOrLogicOperation<TEntity> IOrLogicOperation<TEntity>.Not => new NotOrOperation<TEntity>(Operation, Strategy);
 
         /// <inheritdoc />
         protected override Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation =>
-            x => BuilderResult.GetExpression().And(x);
+            x => BuilderResult.GetExpression().Or(x);
 
         /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> Equals<TValue>(
+        public IOrQueryBuilderResult<TEntity> Contains(
+            Expression<Func<TEntity, string>> propertyExpression,
+            string input) => ContainsInternal(propertyExpression, input);
+
+        /// <inheritdoc/>
+        public IOrQueryBuilderResult<TEntity> Equals<TValue>(
             Expression<Func<TEntity, TValue>> propertyExpression,
             TValue input)
             => EqualsInternal(propertyExpression, input);
 
         /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> Where(
+        public IOrQueryBuilderResult<TEntity> Where(
             Expression<Func<TEntity, bool>> predicate)
             => WhereInternal(predicate);
 
         /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> In<TValue>(
+        public IOrQueryBuilderResult<TEntity> In<TValue>(
             Expression<Func<TEntity, TValue>> propertyExpression,
             IEnumerable<TValue> input)
             => InInternal(propertyExpression, input);
 
         /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> Any<TValue>(
+        public IOrQueryBuilderResult<TEntity> Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
+            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
             => AnyInternal(manyToManySelector, builder);
 
         /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> Brackets(
-            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+        public IOrQueryBuilderResult<TEntity> Brackets(
+            Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder)
             => BracketsInternal(builder);
 
-        /// <inheritdoc/>
-        public IAndQueryBuilderResult<TEntity> Contains(
-            Expression<Func<TEntity, string>> propertyExpression,
-            string input) => ContainsInternal(propertyExpression, input);
-
         /// <inheritdoc />
-        public IAndLogicOperation<TEntity> Conditional(bool condition)
-            => new ConditionAndOperation<TEntity>(Operation, condition, Strategy);
+        public IOrLogicOperation<TEntity> Conditional(bool condition)
+            => new ConditionOrOperation<TEntity>(Operation, condition, Strategy);
     }
 }

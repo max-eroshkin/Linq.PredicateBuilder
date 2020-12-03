@@ -2,11 +2,13 @@
 {
     using System;
     using System.Linq;
+    using System.Linq.Expressions;
     using JetBrains.Annotations;
 
     /// <summary>
     /// Extensions for IQueryable.
     /// </summary>
+    [PublicAPI]
     public static class QueryableBuilderExtensions
     {
         /// <summary>
@@ -36,11 +38,7 @@
             [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
             [NotNull] IOperationStrategy strategy)
         {
-            _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
-            _ = strategy ?? throw new ArgumentException("Strategy cannot be null", nameof(strategy));
-
-            var init = new QueryBuilder<T>(strategy);
-            var expression = builder(init).GetExpression();
+            var expression = CreateExpression(builder, strategy);
 
             return expression == null
                 ? source
@@ -62,6 +60,25 @@
             return source.Build(
                 builder,
                 new OperationStrategy(options));
+        }
+
+        /// <summary>
+        /// Filters a sequence of entities based on a predicate builder.
+        /// </summary>
+        /// <typeparam name="T">Entity type.</typeparam>
+        /// <param name="builder">A predicate builder.</param>
+        /// <param name="strategy">A filtering strategy.</param>
+        public static Expression<Func<T, bool>> CreateExpression<T>(
+            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
+            [NotNull] IOperationStrategy strategy)
+        {
+            _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
+            _ = strategy ?? throw new ArgumentException("Strategy cannot be null", nameof(strategy));
+
+            var init = new QueryBuilder<T>(strategy);
+            var expression = builder(init).GetExpression();
+
+            return expression;
         }
     }
 }

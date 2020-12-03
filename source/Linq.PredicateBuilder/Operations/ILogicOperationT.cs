@@ -57,13 +57,13 @@
         /// <typeparam name="TValue">ttt</typeparam>
         TBuilderResult Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder);
+            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder);
 
         /// <summary>
         /// Builds a predicate using inner <paramref name="builder"/>.
         /// </summary>
         /// <param name="builder">Inner builder.</param>
         TBuilderResult Brackets(
-            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder);
+            Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder);
     }
 }

@@ -110,8 +110,7 @@
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
 
-            var init = new QueryBuilder<long>(new OperationStrategy());
-            var expression = builder(init).GetExpression();
+            var expression = QueryableBuilderExtensions.CreateExpression(builder, new OperationStrategy());
             Debug.WriteLine(expression.ToString());
 
             return expression.Compile().Invoke(1);

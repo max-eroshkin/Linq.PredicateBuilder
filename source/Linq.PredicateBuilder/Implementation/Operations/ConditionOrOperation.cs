@@ -42,12 +42,12 @@
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
+            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
             => AnyInternal(manyToManySelector, builder);
 
         /// <inheritdoc />
         public IOrQueryBuilderResult<TEntity> Brackets(
-            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder)
             => BracketsInternal(builder);
 
         /// <inheritdoc/>

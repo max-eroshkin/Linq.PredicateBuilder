@@ -7,7 +7,7 @@
     /// Промежуточный билдер выражения
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    public class QueryBuilderResult<TEntity> : IAndOrQueryBuilderResult<TEntity>
+    internal class QueryBuilderResult<TEntity> : IAndOrQueryBuilderResult<TEntity>
     {
         private readonly Expression<Func<TEntity, bool>> _predicate;
 

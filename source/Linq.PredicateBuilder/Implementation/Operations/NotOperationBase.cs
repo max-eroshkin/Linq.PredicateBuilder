@@ -100,7 +100,7 @@
         /// <typeparam name="TValue">ttt</typeparam>
         protected QueryBuilderResult<TEntity> AnyInternal<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
+            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
@@ -117,7 +117,7 @@
         /// </summary>
         /// <param name="builder">Inner builder.</param>
         protected IAndOrQueryBuilderResult<TEntity> BracketsInternal(
-            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
