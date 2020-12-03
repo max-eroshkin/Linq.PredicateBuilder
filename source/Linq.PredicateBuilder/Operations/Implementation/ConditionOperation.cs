@@ -5,25 +5,22 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Билдер выражения поиска
+    /// Операция отрицания
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    public class QueryBuilder<TEntity> : LogicOperation<TEntity>, ILogicOperation<TEntity>
+    public class ConditionOperation<TEntity> : ConditionOperationBase<TEntity>, ILogicOperation<TEntity>
     {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="strategy">A filtering strategy.</param>
-        public QueryBuilder(IOperationStrategy strategy)
-            : base(new QueryBuilderResult<TEntity>(strategy), strategy)
+        /// <inheritdoc />
+        public ConditionOperation(
+            Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> baseOperation,
+            bool condition,
+            IOperationStrategy strategy)
+            : base(baseOperation, condition, strategy)
         {
         }
 
         /// <inheritdoc />
         public ILogicOperation<TEntity> Not => new NotOperation<TEntity>(Operation, Strategy);
-
-        /// <inheritdoc />
-        protected override Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation => x => x;
 
         /// <inheritdoc/>
         public QueryBuilderResult<TEntity> Equals<TValue>(
@@ -49,12 +46,13 @@
             => AnyInternal(manyToManySelector, builder);
 
         /// <inheritdoc/>
-        public QueryBuilderResult<TEntity> Contains(
-            Expression<Func<TEntity, string>> propertyExpression,
-            string input) => ContainsInternal(propertyExpression, input);
-
-        /// <inheritdoc />
         public ILogicOperation<TEntity> Conditional(bool condition)
             => new ConditionOperation<TEntity>(Operation, condition, Strategy);
+
+        /// <inheritdoc />
+        public QueryBuilderResult<TEntity> Contains(
+            Expression<Func<TEntity, string>> propertyExpression,
+            string input)
+            => ContainsInternal(propertyExpression, input);
     }
 }

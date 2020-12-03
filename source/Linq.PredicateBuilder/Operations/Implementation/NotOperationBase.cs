@@ -4,52 +4,34 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    /// <inheritdoc />
-    public abstract class LogicOperation<TEntity>
+    /// <summary>
+    /// Операция отрицания
+    /// </summary>
+    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    public abstract class NotOperationBase<TEntity>
     {
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="builderResult">Промежуточный билдер выражения</param>
+        /// <param name="operation">Возвращает делегат применения логической операции к выражению</param>
         /// <param name="strategy">A filtering strategy.</param>
-        protected LogicOperation(QueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
-            : this(strategy)
+        public NotOperationBase(
+            Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> operation,
+            IOperationStrategy strategy)
         {
-            BuilderResult = builderResult;
-        }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="strategy">A filtering strategy.</param>
-        protected LogicOperation(IOperationStrategy strategy)
-        {
+            Operation = operation;
             Strategy = strategy;
         }
 
         /// <summary>
-        /// Возвращает делегат применения логической операции к выражению
+        /// fsadf
         /// </summary>
-        protected abstract Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation { get; }
+        protected Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation { get; }
 
         /// <summary>
-        /// Промежуточный билдер
-        /// </summary>
-        protected QueryBuilderResult<TEntity> BuilderResult { get; }
-
-        /// <summary>
-        /// A filtering strategy.
+        /// The filtering strategy.
         /// </summary>
         protected IOperationStrategy Strategy { get; }
-
-        /// <summary>
-        /// Добавляет логическую операцию только при выполнении услович
-        /// </summary>
-        /// <param name="condition">Условие добавления операции</param>
-        protected ConditionOperation<TEntity> ConditionalInternal(bool condition)
-        {
-            return new ConditionOperation<TEntity>(Operation, condition, Strategy);
-        }
 
         /// <summary>
         /// Builds a predicate indicating whether a specified substring occurs within the string
@@ -61,8 +43,9 @@
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
         {
+            var predicate = Strategy.Contains(propertyExpression, input).Not();
             return new QueryBuilderResult<TEntity>(
-                Operation(Strategy.Contains(propertyExpression, input)),
+                Operation(predicate),
                 Strategy);
         }
 
@@ -76,8 +59,9 @@
             Expression<Func<TEntity, TValue>> propertyExpression,
             TValue input)
         {
+            var predicate = Strategy.Equals(propertyExpression, input).Not();
             return new QueryBuilderResult<TEntity>(
-                Operation(Strategy.Equals(propertyExpression, input)),
+                Operation(predicate),
                 Strategy);
         }
 
@@ -88,7 +72,7 @@
         protected QueryBuilderResult<TEntity> WhereInternal(Expression<Func<TEntity, bool>> predicate)
         {
             return new QueryBuilderResult<TEntity>(
-                Operation(predicate),
+                Operation(predicate.Not()),
                 Strategy);
         }
 
@@ -102,8 +86,9 @@
             Expression<Func<TEntity, TValue>> propertyExpression,
             IEnumerable<TValue> input)
         {
+            var predicate = Strategy.In(propertyExpression, input).Not();
             return new QueryBuilderResult<TEntity>(
-                Operation(Strategy.In(propertyExpression, input)),
+                Operation(predicate),
                 Strategy);
         }
 
@@ -121,9 +106,9 @@
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
             var init = new QueryBuilder<TValue>(Strategy);
             var expression = builder(init).GetExpression();
-
+            var predicate = Strategy.Any(manyToManySelector, expression).Not();
             return new QueryBuilderResult<TEntity>(
-                Operation(Strategy.Any(manyToManySelector, expression)),
+                Operation(predicate),
                 Strategy);
         }
     }

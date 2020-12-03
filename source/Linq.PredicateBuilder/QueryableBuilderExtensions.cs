@@ -17,7 +17,7 @@
         /// <param name="builder">A predicate builder.</param>
         public static IQueryable<T> Build<T>(
             [NotNull] this IQueryable<T> source,
-            [NotNull] Func<QueryBuilder<T>, QueryBuilderResult<T>> builder)
+            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder)
         {
             return source.Build(
                 builder,
@@ -33,7 +33,7 @@
         /// <param name="strategy">A filtering strategy.</param>
         public static IQueryable<T> Build<T>(
             [NotNull] this IQueryable<T> source,
-            [NotNull] Func<QueryBuilder<T>, QueryBuilderResult<T>> builder,
+            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
             [NotNull] IOperationStrategy strategy)
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
@@ -56,7 +56,7 @@
         /// <param name="options">Builder options</param>
         public static IQueryable<T> Build<T>(
             [NotNull] this IQueryable<T> source,
-            [NotNull] Func<QueryBuilder<T>, QueryBuilderResult<T>> builder,
+            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
             BuilderOptions options)
         {
             return source.Build(
