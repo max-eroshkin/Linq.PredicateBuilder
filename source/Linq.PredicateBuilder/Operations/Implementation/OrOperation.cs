@@ -8,7 +8,7 @@
     /// Операция логического "Или"
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности</typeparam>
-    public class OrOperation<TEntity> : LogicOperation<TEntity>, IOrLogicOperation<TEntity>
+    internal class OrOperation<TEntity> : LogicOperation<TEntity>, IOrLogicOperation<TEntity>
     {
         /// <summary>
         /// ctor

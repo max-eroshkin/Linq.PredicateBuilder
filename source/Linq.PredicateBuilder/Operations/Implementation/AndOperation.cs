@@ -8,7 +8,7 @@
     /// Операция логического "И"
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности</typeparam>
-    public class AndOperation<TEntity> : LogicOperation<TEntity>, IAndLogicOperation<TEntity>
+    internal class AndOperation<TEntity> : LogicOperation<TEntity>, IAndLogicOperation<TEntity>
     {
         /// <summary>
         /// ctor

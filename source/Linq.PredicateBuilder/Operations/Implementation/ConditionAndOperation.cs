@@ -8,7 +8,7 @@
     /// Операция отрицания
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    public class ConditionAndOperation<TEntity> : ConditionOperationBase<TEntity>, IAndLogicOperation<TEntity>
+    internal class ConditionAndOperation<TEntity> : ConditionOperationBase<TEntity>, IAndLogicOperation<TEntity>
     {
         /// <inheritdoc />
         public ConditionAndOperation(

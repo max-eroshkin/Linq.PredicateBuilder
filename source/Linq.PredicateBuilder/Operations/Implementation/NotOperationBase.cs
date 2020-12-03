@@ -8,7 +8,7 @@
     /// Операция отрицания
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    public abstract class NotOperationBase<TEntity>
+    internal abstract class NotOperationBase<TEntity>
     {
         /// <summary>
         /// ctor
