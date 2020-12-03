@@ -13,8 +13,8 @@
         public void CaseSensitive()
         {
             var result = DataSet.Build(
-                    _ => _.Contains(x => x.Name, "aaAa"),
-                    BuilderOptions.None);
+                _ => _.Contains(x => x.Name, "aaAa"),
+                BuilderOptions.None);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
         }
@@ -23,8 +23,8 @@
         public void IgnoreCase()
         {
             var result = DataSet.Build(
-                    _ => _.Contains(x => x.Name, "aaAa"),
-                    BuilderOptions.IgnoreCase);
+                _ => _.Contains(x => x.Name, "aaAa"),
+                BuilderOptions.IgnoreCase);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
         }
@@ -33,8 +33,8 @@
         public void Empty()
         {
             var result = DataSet.Build(
-                    _ => _.Contains(x => x.Name, "aaAb"),
-                    BuilderOptions.IgnoreCase);
+                _ => _.Contains(x => x.Name, "aaAb"),
+                BuilderOptions.IgnoreCase);
 
             result.Should().BeEmpty();
         }
@@ -53,25 +53,25 @@
         public void IgnoreNullInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Contains(x => x.Name, null));
+                _ => _.Contains(x => x.Name, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
- 
+
         [Fact]
         public void IgnoreEmptyInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Contains(x => x.Name, string.Empty));
+                _ => _.Contains(x => x.Name, string.Empty));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
- 
+
         [Fact]
         public void IgnoreWhitespaceInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Contains(x => x.Name, " "));
+                _ => _.Contains(x => x.Name, " "));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }

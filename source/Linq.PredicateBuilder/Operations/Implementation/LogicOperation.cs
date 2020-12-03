@@ -57,7 +57,7 @@
         /// </summary>
         /// <param name="propertyExpression">The property selector expression.</param>
         /// <param name="input">The string to seek.</param>
-        protected QueryBuilderResult<TEntity> ContainsInternal(
+        protected IAndOrQueryBuilderResult<TEntity> ContainsInternal(
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
         {
@@ -72,7 +72,7 @@
         /// <param name="propertyExpression">Селектор свойства</param>
         /// <param name="input">Значение для сравнения</param>
         /// <typeparam name="TValue">Тип свойства</typeparam>
-        protected QueryBuilderResult<TEntity> EqualsInternal<TValue>(
+        protected IAndOrQueryBuilderResult<TEntity> EqualsInternal<TValue>(
             Expression<Func<TEntity, TValue>> propertyExpression,
             TValue input)
         {
@@ -85,7 +85,7 @@
         /// Проверяет на выполнение условия
         /// </summary>
         /// <param name="predicate">Условие</param>
-        protected QueryBuilderResult<TEntity> WhereInternal(Expression<Func<TEntity, bool>> predicate)
+        protected IAndOrQueryBuilderResult<TEntity> WhereInternal(Expression<Func<TEntity, bool>> predicate)
         {
             return new QueryBuilderResult<TEntity>(
                 Operation(predicate),
@@ -98,7 +98,7 @@
         /// <param name="propertyExpression">Селектор свойства</param>
         /// <param name="input">Множество для сравнения</param>
         /// <typeparam name="TValue">Тип свойства</typeparam>
-        protected QueryBuilderResult<TEntity> InInternal<TValue>(
+        protected IAndOrQueryBuilderResult<TEntity> InInternal<TValue>(
             Expression<Func<TEntity, TValue>> propertyExpression,
             IEnumerable<TValue> input)
         {
@@ -113,9 +113,9 @@
         /// <param name="manyToManySelector">sss</param>
         /// <param name="builder">inner bldr</param>
         /// <typeparam name="TValue">ttt</typeparam>
-        protected QueryBuilderResult<TEntity> AnyInternal<TValue>(
+        protected IAndOrQueryBuilderResult<TEntity> AnyInternal<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, QueryBuilderResult<TValue>> builder)
+            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
@@ -124,6 +124,21 @@
 
             return new QueryBuilderResult<TEntity>(
                 Operation(Strategy.Any(manyToManySelector, expression)),
+                Strategy);
+        }
+
+        /// <summary>
+        /// Builds a predicate using inner <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">Inner builder.</param>
+        protected IAndOrQueryBuilderResult<TEntity> BracketsInternal(
+            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+        {
+            if (builder == null)
+                throw new ArgumentException("Builder cannot be null", nameof(builder));
+            var init = new QueryBuilder<TEntity>(Strategy);
+            return new QueryBuilderResult<TEntity>(
+                Operation(builder(init).GetExpression()),
                 Strategy);
         }
     }

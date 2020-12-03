@@ -8,14 +8,14 @@
     /// Операция отрицания
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    internal class NotOrOperationBase<TEntity> : NotOperationBase<TEntity>, IOrLogicOperation<TEntity>
+    internal class NotOrOperation<TEntity> : NotOperationBase<TEntity>, IOrLogicOperation<TEntity>
     {
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="operation">Возвращает делегат применения логической операции к выражению</param>
         /// <param name="strategy">A filtering strategy.</param>
-        public NotOrOperationBase(
+        public NotOrOperation(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> operation,
             IOperationStrategy strategy)
             : base(operation, strategy)
@@ -23,7 +23,7 @@
         }
 
         /// <inheritdoc />
-        public IOrLogicOperation<TEntity> Not => new NotOrOperationBase<TEntity>(Operation, Strategy);
+        public IOrLogicOperation<TEntity> Not => new NotOrOperation<TEntity>(Operation, Strategy);
 
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Equals<TValue>(
@@ -45,8 +45,13 @@
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, QueryBuilderResult<TValue>> builder)
+            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
             => AnyInternal(manyToManySelector, builder);
+
+        /// <inheritdoc/>
+        public IOrQueryBuilderResult<TEntity> Brackets(
+            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            => BracketsInternal(builder);
 
         /// <inheritdoc/>
         public IOrLogicOperation<TEntity> Conditional(bool condition)

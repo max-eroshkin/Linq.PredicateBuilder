@@ -12,8 +12,8 @@
         public void CaseSensitive()
         {
             var result = DataSet.Build(
-                    _ => _.Equals(x => x.Name, "aaAa1"),
-                    BuilderOptions.None);
+                _ => _.Equals(x => x.Name, "aaAa1"),
+                BuilderOptions.None);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
         }
@@ -22,8 +22,8 @@
         public void CaseSensitiveEmpty()
         {
             var result = DataSet.Build(
-                    _ => _.Equals(x => x.Name, "aAAa1"),
-                    BuilderOptions.None);
+                _ => _.Equals(x => x.Name, "aAAa1"),
+                BuilderOptions.None);
 
             result.Should().BeEmpty();
         }
@@ -32,8 +32,8 @@
         public void IgnoreCase()
         {
             var result = DataSet.Build(
-                    _ => _.Equals(x => x.Name, "aAAa1"),
-                    BuilderOptions.IgnoreCase);
+                _ => _.Equals(x => x.Name, "aAAa1"),
+                BuilderOptions.IgnoreCase);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
         }
@@ -42,8 +42,8 @@
         public void IgnoreCaseEmpty()
         {
             var result = DataSet.Build(
-                    _ => _.Equals(x => x.Name, "aaAb3"),
-                    BuilderOptions.IgnoreCase);
+                _ => _.Equals(x => x.Name, "aaAb3"),
+                BuilderOptions.IgnoreCase);
 
             result.Should().BeEmpty();
         }
@@ -71,7 +71,7 @@
         public void IgnoreNullStringInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Equals(x => x.Name, null));
+                _ => _.Equals(x => x.Name, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -80,25 +80,25 @@
         public void IgnoreNullLongInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Equals(x => x.ParentId, null));
+                _ => _.Equals(x => x.ParentId, null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
- 
+
         [Fact]
         public void IgnoreEmptyInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Equals(x => x.Name, string.Empty));
+                _ => _.Equals(x => x.Name, string.Empty));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
- 
+
         [Fact]
         public void IgnoreWhitespaceInput()
         {
             var resultNull = DataSet.Build(
-                    _ => _.Equals(x => x.Name, " "));
+                _ => _.Equals(x => x.Name, " "));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }

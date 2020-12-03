@@ -47,8 +47,13 @@
         /// <inheritdoc/>
         public IAndQueryBuilderResult<TEntity> Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, QueryBuilderResult<TValue>> builder)
+            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
             => AnyInternal(manyToManySelector, builder);
+
+        /// <inheritdoc/>
+        public IAndQueryBuilderResult<TEntity> Brackets(
+            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            => BracketsInternal(builder);
 
         /// <inheritdoc/>
         public IAndQueryBuilderResult<TEntity> Contains(

@@ -4,7 +4,7 @@
     /// Defines methods of logical operations.
     /// </summary>
     /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
-    public interface ILogicOperation<TEntity> : ILogicOperationT<QueryBuilderResult<TEntity>, TEntity>
+    public interface ILogicOperation<TEntity> : ILogicOperationT<IAndOrQueryBuilderResult<TEntity>, TEntity>
     {
         /// <summary>
         /// Logic NOT.

@@ -20,7 +20,7 @@
         }
 
         /// <inheritdoc />
-        public IOrLogicOperation<TEntity> Not => new NotOrOperationBase<TEntity>(Operation, Strategy);
+        public IOrLogicOperation<TEntity> Not => new NotOrOperation<TEntity>(Operation, Strategy);
 
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Equals<TValue>(
@@ -42,8 +42,13 @@
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Any<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, QueryBuilderResult<TValue>> builder)
+            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
             => AnyInternal(manyToManySelector, builder);
+
+        /// <inheritdoc />
+        public IOrQueryBuilderResult<TEntity> Brackets(
+            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+            => BracketsInternal(builder);
 
         /// <inheritdoc/>
         public IOrLogicOperation<TEntity> Conditional(bool condition)

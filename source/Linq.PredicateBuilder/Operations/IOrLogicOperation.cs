@@ -1,10 +1,5 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using JetBrains.Annotations;
-
     /// <summary>
     /// Defines methods of logical operations.
     /// </summary>

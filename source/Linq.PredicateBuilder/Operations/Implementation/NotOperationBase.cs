@@ -100,13 +100,30 @@
         /// <typeparam name="TValue">ttt</typeparam>
         protected QueryBuilderResult<TEntity> AnyInternal<TValue>(
             Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<QueryBuilder<TValue>, QueryBuilderResult<TValue>> builder)
+            Func<QueryBuilder<TValue>, IQueryBuilderResult<TValue>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
             var init = new QueryBuilder<TValue>(Strategy);
             var expression = builder(init).GetExpression();
             var predicate = Strategy.Any(manyToManySelector, expression).Not();
+            return new QueryBuilderResult<TEntity>(
+                Operation(predicate),
+                Strategy);
+        }
+
+        /// <summary>
+        /// Builds a predicate using inner <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">Inner builder.</param>
+        protected IAndOrQueryBuilderResult<TEntity> BracketsInternal(
+            Func<QueryBuilder<TEntity>, IQueryBuilderResult<TEntity>> builder)
+        {
+            if (builder == null)
+                throw new ArgumentException("Builder cannot be null", nameof(builder));
+            var init = new QueryBuilder<TEntity>(Strategy);
+            var expression = builder(init).GetExpression();
+            var predicate = expression.Not();
             return new QueryBuilderResult<TEntity>(
                 Operation(predicate),
                 Strategy);

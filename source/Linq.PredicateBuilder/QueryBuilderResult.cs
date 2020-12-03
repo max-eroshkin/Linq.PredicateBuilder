@@ -7,7 +7,7 @@
     /// Промежуточный билдер выражения
     /// </summary>
     /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
-    public class QueryBuilderResult<TEntity> : IAndQueryBuilderResult<TEntity>, IOrQueryBuilderResult<TEntity>
+    public class QueryBuilderResult<TEntity> : IAndOrQueryBuilderResult<TEntity>
     {
         private readonly Expression<Func<TEntity, bool>> _predicate;
 
@@ -17,9 +17,9 @@
         /// <param name="predicate">Условие, на основе которого строится итоговое выражение</param>
         /// <param name="strategy">A filtering strategy.</param>
         public QueryBuilderResult(Expression<Func<TEntity, bool>> predicate, IOperationStrategy strategy)
-         : this(strategy)
         {
             _predicate = predicate;
+            Strategy = strategy;
         }
 
         /// <summary>
@@ -27,19 +27,14 @@
         /// </summary>
         /// <param name="strategy">A filtering strategy.</param>
         public QueryBuilderResult(IOperationStrategy strategy)
+            : this(null, strategy)
         {
-            _predicate = null;
-            Strategy = strategy;
         }
 
-        /// <summary>
-        /// Операция логического "И"
-        /// </summary>
+        /// <inheritdoc />
         public IAndLogicOperation<TEntity> And => new AndOperation<TEntity>(this, Strategy);
 
-        /// <summary>
-        /// Операция логического "Или"
-        /// </summary>
+        /// <inheritdoc />
         public IOrLogicOperation<TEntity> Or => new OrOperation<TEntity>(this, Strategy);
 
         private IOperationStrategy Strategy { get; }
