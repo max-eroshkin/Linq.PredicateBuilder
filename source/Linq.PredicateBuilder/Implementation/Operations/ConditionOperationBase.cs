@@ -15,7 +15,7 @@
         /// <param name="baseOperation">A filter transforming operation.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="strategy">The filtering strategy.</param>
-        public ConditionOperationBase(
+        protected ConditionOperationBase(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> baseOperation,
             bool condition,
             IOperationStrategy strategy)

@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="operation">A filter transforming operation.</param>
         /// <param name="strategy">A filtering strategy.</param>
-        public NotOperationBase(
+        protected NotOperationBase(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> operation,
             IOperationStrategy strategy)
         {
