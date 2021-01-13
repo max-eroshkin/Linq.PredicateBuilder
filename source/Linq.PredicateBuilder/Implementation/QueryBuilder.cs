@@ -5,9 +5,9 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Билдер выражения поиска
+    /// Query builder.
     /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
     internal class QueryBuilder<TEntity> : LogicOperation<TEntity>, ILogicOperation<TEntity>
     {
         /// <summary>
@@ -26,9 +26,9 @@
         protected override Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation => x => x;
 
         /// <inheritdoc/>
-        public IAndOrQueryBuilderResult<TEntity> Equals<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            TValue input)
+        public IAndOrQueryBuilderResult<TEntity> Equals<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            TInput input)
             => EqualsInternal(propertyExpression, input);
 
         /// <inheritdoc/>
@@ -37,16 +37,22 @@
             => WhereInternal(predicate);
 
         /// <inheritdoc/>
-        public IAndOrQueryBuilderResult<TEntity> In<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            IEnumerable<TValue> input)
+        public IAndOrQueryBuilderResult<TEntity> Where<TInput>(
+            Expression<Func<TEntity, TInput, bool>> predicate,
+            TInput input)
+            => WhereInternal(predicate, input);
+
+        /// <inheritdoc/>
+        public IAndOrQueryBuilderResult<TEntity> In<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            IEnumerable<TInput> input)
             => InInternal(propertyExpression, input);
 
         /// <inheritdoc/>
-        public IAndOrQueryBuilderResult<TEntity> Any<TValue>(
-            Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
-            => AnyInternal(manyToManySelector, builder);
+        public IAndOrQueryBuilderResult<TEntity> Any<TInput>(
+            Expression<Func<TEntity, ICollection<TInput>>> propertyExpression,
+            Func<ILogicOperation<TInput>, IQueryBuilderResult<TInput>> builder)
+            => AnyInternal(propertyExpression, builder);
 
         /// <inheritdoc />
         public IAndOrQueryBuilderResult<TEntity> Brackets(

@@ -4,13 +4,13 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Промежуточный билдер выражения
+    /// An intermediate query builder.
     /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <typeparam name="TEntity">The data source type.</typeparam>
     public interface IQueryBuilderResult<TEntity>
     {
         /// <summary>
-        /// Возвращает выражение предиката, построенное билдером
+        /// Returns a predicate based on the builder.
         /// </summary>
         Expression<Func<TEntity, bool>> GetExpression();
     }

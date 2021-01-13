@@ -4,17 +4,10 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    /// <summary>
-    /// Операция отрицания
-    /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <inheritdoc cref="ILogicOperation{TEntity}" />
     internal class NotOperation<TEntity> : NotOperationBase<TEntity>, ILogicOperation<TEntity>
     {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="operation">Возвращает делегат применения логической операции к выражению</param>
-        /// <param name="strategy">A filtering strategy.</param>
+        /// <inheritdoc />
         public NotOperation(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> operation,
             IOperationStrategy strategy)
@@ -37,6 +30,12 @@
             => WhereInternal(predicate);
 
         /// <inheritdoc/>
+        public IAndOrQueryBuilderResult<TEntity> Where<TValue>(
+            Expression<Func<TEntity, TValue, bool>> predicate,
+            TValue input)
+            => WhereInternal(predicate, input);
+
+        /// <inheritdoc/>
         public IAndOrQueryBuilderResult<TEntity> In<TValue>(
             Expression<Func<TEntity, TValue>> propertyExpression,
             IEnumerable<TValue> input)
@@ -44,9 +43,9 @@
 
         /// <inheritdoc/>
         public IAndOrQueryBuilderResult<TEntity> Any<TValue>(
-            Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
+            Expression<Func<TEntity, ICollection<TValue>>> propertyExpression,
             Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
-            => AnyInternal(manyToManySelector, builder);
+            => AnyInternal(propertyExpression, builder);
 
         /// <inheritdoc/>
         public IAndOrQueryBuilderResult<TEntity> Brackets(

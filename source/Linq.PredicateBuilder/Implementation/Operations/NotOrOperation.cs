@@ -4,17 +4,10 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    /// <summary>
-    /// Операция отрицания
-    /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <inheritdoc cref="ILogicOperation{TEntity}" />
     internal class NotOrOperation<TEntity> : NotOperationBase<TEntity>, IOrLogicOperation<TEntity>
     {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="operation">Возвращает делегат применения логической операции к выражению</param>
-        /// <param name="strategy">A filtering strategy.</param>
+        /// <inheritdoc />
         public NotOrOperation(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> operation,
             IOperationStrategy strategy)
@@ -26,9 +19,9 @@
         public IOrLogicOperation<TEntity> Not => new NotOrOperation<TEntity>(Operation, Strategy);
 
         /// <inheritdoc/>
-        public IOrQueryBuilderResult<TEntity> Equals<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            TValue input)
+        public IOrQueryBuilderResult<TEntity> Equals<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            TInput input)
             => EqualsInternal(propertyExpression, input);
 
         /// <inheritdoc/>
@@ -37,16 +30,22 @@
             => WhereInternal(predicate);
 
         /// <inheritdoc/>
-        public IOrQueryBuilderResult<TEntity> In<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            IEnumerable<TValue> input)
+        public IOrQueryBuilderResult<TEntity> Where<TInput>(
+            Expression<Func<TEntity, TInput, bool>> predicate,
+            TInput input)
+            => WhereInternal(predicate, input);
+
+        /// <inheritdoc/>
+        public IOrQueryBuilderResult<TEntity> In<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            IEnumerable<TInput> input)
             => InInternal(propertyExpression, input);
 
         /// <inheritdoc/>
-        public IOrQueryBuilderResult<TEntity> Any<TValue>(
-            Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
-            => AnyInternal(manyToManySelector, builder);
+        public IOrQueryBuilderResult<TEntity> Any<TInput>(
+            Expression<Func<TEntity, ICollection<TInput>>> propertyExpression,
+            Func<ILogicOperation<TInput>, IQueryBuilderResult<TInput>> builder)
+            => AnyInternal(propertyExpression, builder);
 
         /// <inheritdoc/>
         public IOrQueryBuilderResult<TEntity> Brackets(

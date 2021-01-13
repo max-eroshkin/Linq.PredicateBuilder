@@ -1,13 +1,10 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    /// <summary>
-    /// Промежуточный билдер выражения
-    /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <inheritdoc cref="IQueryBuilderResult{TEntity}"/>
     public interface IAndQueryBuilderResult<TEntity> : IQueryBuilderResult<TEntity>
     {
         /// <summary>
-        /// Операция логического "И"
+        /// Represents logical AND.
         /// </summary>
         IAndLogicOperation<TEntity> And { get; }
     }

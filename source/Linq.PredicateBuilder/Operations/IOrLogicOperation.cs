@@ -7,14 +7,14 @@
     public interface IOrLogicOperation<TEntity> : ILogicOperationT<IOrQueryBuilderResult<TEntity>, TEntity>
     {
         /// <summary>
-        /// Logic NOT.
+        /// Represents logical NOT.
         /// </summary>
         IOrLogicOperation<TEntity> Not { get; }
 
         /// <summary>
-        /// Добавляет логическую операцию только при выполнении услович
+        /// Evaluates the first trailing builder expression if only the specified condition evaluates to true.
         /// </summary>
-        /// <param name="condition">Условие добавления операции</param>
+        /// <param name="condition">The condition to evaluate.</param>
         IOrLogicOperation<TEntity> Conditional(bool condition);
     }
 }

@@ -78,7 +78,7 @@
         {
             var map = first.Parameters
                 .Select((f, i) => new { f, s = second.Parameters[i] })
-                .ToDictionary(p => p.s, p => p.f);
+                .ToDictionary(p => p.s, p => (Expression)p.f);
 
             var secondBody = ParameterRebinder.ReplaceParameters(map, second.Body);
             return Expression.Lambda<T>(merge(first.Body, secondBody), first.Parameters);

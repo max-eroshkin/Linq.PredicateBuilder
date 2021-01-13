@@ -3,10 +3,7 @@
     using System;
     using System.Linq.Expressions;
 
-    /// <summary>
-    /// Промежуточный билдер выражения
-    /// </summary>
-    /// <typeparam name="TEntity">Тип сущности в выражении</typeparam>
+    /// <inheritdoc cref="IQueryBuilderResult{TEntity}"/>
     internal class QueryBuilderResult<TEntity> : IAndOrQueryBuilderResult<TEntity>
     {
         private readonly Expression<Func<TEntity, bool>> _predicate;
@@ -14,7 +11,7 @@
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="predicate">Условие, на основе которого строится итоговое выражение</param>
+        /// <param name="predicate">The filtering expression.</param>
         /// <param name="strategy">A filtering strategy.</param>
         public QueryBuilderResult(Expression<Func<TEntity, bool>> predicate, IOperationStrategy strategy)
         {

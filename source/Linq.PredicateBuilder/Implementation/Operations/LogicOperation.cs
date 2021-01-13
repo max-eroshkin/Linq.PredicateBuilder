@@ -4,13 +4,16 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Defines methods of logical operations.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
     public abstract class LogicOperation<TEntity>
     {
         /// <summary>
-        /// ctor
+        /// ctor.
         /// </summary>
-        /// <param name="builderResult">Промежуточный билдер выражения</param>
+        /// <param name="builderResult">An intermediate builder.</param>
         /// <param name="strategy">A filtering strategy.</param>
         protected LogicOperation(IAndOrQueryBuilderResult<TEntity> builderResult, IOperationStrategy strategy)
             : this(strategy)
@@ -19,7 +22,7 @@
         }
 
         /// <summary>
-        /// ctor
+        /// ctor.
         /// </summary>
         /// <param name="strategy">A filtering strategy.</param>
         protected LogicOperation(IOperationStrategy strategy)
@@ -28,12 +31,12 @@
         }
 
         /// <summary>
-        /// Возвращает делегат применения логической операции к выражению
+        /// A delegate that transforms the specified filtering expression.
         /// </summary>
         protected abstract Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> Operation { get; }
 
         /// <summary>
-        /// Промежуточный билдер
+        /// An intermediate builder.
         /// </summary>
         protected IAndOrQueryBuilderResult<TEntity> BuilderResult { get; }
 
@@ -42,21 +45,13 @@
         /// </summary>
         protected IOperationStrategy Strategy { get; }
 
-        /// <summary>
-        /// Добавляет логическую операцию только при выполнении услович
-        /// </summary>
-        /// <param name="condition">Условие добавления операции</param>
+        /// <inheritdoc cref="ILogicOperation{TEntity}.Conditional"/>
         protected ConditionOperation<TEntity> ConditionalInternal(bool condition)
         {
             return new ConditionOperation<TEntity>(Operation, condition, Strategy);
         }
 
-        /// <summary>
-        /// Builds a predicate indicating whether a specified substring occurs within the string
-        /// defined by a property expression.
-        /// </summary>
-        /// <param name="propertyExpression">The property selector expression.</param>
-        /// <param name="input">The string to seek.</param>
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Contains"/>
         protected IAndOrQueryBuilderResult<TEntity> ContainsInternal(
             Expression<Func<TEntity, string>> propertyExpression,
             string input)
@@ -66,25 +61,17 @@
                 Strategy);
         }
 
-        /// <summary>
-        /// Проверяет свойство на равенство
-        /// </summary>
-        /// <param name="propertyExpression">Селектор свойства</param>
-        /// <param name="input">Значение для сравнения</param>
-        /// <typeparam name="TValue">Тип свойства</typeparam>
-        protected IAndOrQueryBuilderResult<TEntity> EqualsInternal<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            TValue input)
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Equals{TInput}"/>
+        protected IAndOrQueryBuilderResult<TEntity> EqualsInternal<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            TInput input)
         {
             return new QueryBuilderResult<TEntity>(
                 Operation(Strategy.Equals(propertyExpression, input)),
                 Strategy);
         }
 
-        /// <summary>
-        /// Проверяет на выполнение условия
-        /// </summary>
-        /// <param name="predicate">Условие</param>
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Where"/>
         protected IAndOrQueryBuilderResult<TEntity> WhereInternal(Expression<Func<TEntity, bool>> predicate)
         {
             return new QueryBuilderResult<TEntity>(
@@ -92,34 +79,34 @@
                 Strategy);
         }
 
-        /// <summary>
-        /// Проверяет свойство на вхождение в множество
-        /// </summary>
-        /// <param name="propertyExpression">Селектор свойства</param>
-        /// <param name="input">Множество для сравнения</param>
-        /// <typeparam name="TValue">Тип свойства</typeparam>
-        protected IAndOrQueryBuilderResult<TEntity> InInternal<TValue>(
-            Expression<Func<TEntity, TValue>> propertyExpression,
-            IEnumerable<TValue> input)
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Where"/>
+        protected IAndOrQueryBuilderResult<TEntity> WhereInternal<TInput>(
+            Expression<Func<TEntity, TInput, bool>> predicate,
+            TInput input)
+        {
+            return new QueryBuilderResult<TEntity>(
+                Operation(Strategy.Where(predicate, input)),
+                Strategy);
+        }
+
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.In{TInput}"/>
+        protected IAndOrQueryBuilderResult<TEntity> InInternal<TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            IEnumerable<TInput> input)
         {
             return new QueryBuilderResult<TEntity>(
                 Operation(Strategy.In(propertyExpression, input)),
                 Strategy);
         }
 
-        /// <summary>
-        /// qqq
-        /// </summary>
-        /// <param name="manyToManySelector">sss</param>
-        /// <param name="builder">inner bldr</param>
-        /// <typeparam name="TValue">ttt</typeparam>
-        protected IAndOrQueryBuilderResult<TEntity> AnyInternal<TValue>(
-            Expression<Func<TEntity, ICollection<TValue>>> manyToManySelector,
-            Func<ILogicOperation<TValue>, IQueryBuilderResult<TValue>> builder)
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Any{TInput}"/>
+        protected IAndOrQueryBuilderResult<TEntity> AnyInternal<TInput>(
+            Expression<Func<TEntity, ICollection<TInput>>> manyToManySelector,
+            Func<ILogicOperation<TInput>, IQueryBuilderResult<TInput>> builder)
         {
             if (builder == null)
                 throw new ArgumentException("Builder cannot be null", nameof(builder));
-            var init = new QueryBuilder<TValue>(Strategy);
+            var init = new QueryBuilder<TInput>(Strategy);
             var expression = builder(init).GetExpression();
 
             return new QueryBuilderResult<TEntity>(
@@ -127,10 +114,7 @@
                 Strategy);
         }
 
-        /// <summary>
-        /// Builds a predicate using inner <paramref name="builder"/>.
-        /// </summary>
-        /// <param name="builder">Inner builder.</param>
+        /// <inheritdoc cref="ILogicOperationT{TBuilderResult,TEntity}.Brackets"/>
         protected IAndOrQueryBuilderResult<TEntity> BracketsInternal(
             Func<ILogicOperation<TEntity>, IQueryBuilderResult<TEntity>> builder)
         {

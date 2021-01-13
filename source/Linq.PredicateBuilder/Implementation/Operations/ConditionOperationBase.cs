@@ -3,10 +3,7 @@
     using System;
     using System.Linq.Expressions;
 
-    /// <summary>
-    /// Операция логического "И"
-    /// </summary>
-    /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
+    /// <inheritdoc cref="LogicOperation{TEntity}"/>
     public abstract class ConditionOperationBase<TEntity> : LogicOperation<TEntity>
     {
         private readonly bool _condition;
@@ -15,9 +12,9 @@
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="baseOperation">Базовая логическая операция</param>
-        /// <param name="condition">Условие добавления операции</param>
-        /// <param name="strategy">A filtering strategy.</param>
+        /// <param name="baseOperation">A filter transforming operation.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="strategy">The filtering strategy.</param>
         public ConditionOperationBase(
             Func<Expression<Func<TEntity, bool>>, Expression<Func<TEntity, bool>>> baseOperation,
             bool condition,

@@ -8,11 +8,11 @@
     /// </summary>
     internal sealed class ParameterRebinder : ExpressionVisitor
     {
-        private readonly Dictionary<ParameterExpression, ParameterExpression> _map;
+        private readonly Dictionary<ParameterExpression, Expression> _map;
 
-        private ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
+        private ParameterRebinder(Dictionary<ParameterExpression, Expression> map)
         {
-            _map = map ?? new Dictionary<ParameterExpression, ParameterExpression>();
+            _map = map ?? new Dictionary<ParameterExpression, Expression>();
         }
 
         /// <summary>
@@ -21,7 +21,7 @@
         /// <param name="map">Parameter map.</param>
         /// <param name="exp">An expression.</param>
         public static Expression ReplaceParameters(
-            Dictionary<ParameterExpression, ParameterExpression> map,
+            Dictionary<ParameterExpression, Expression> map,
             Expression exp)
         {
             return new ParameterRebinder(map).Visit(exp);
@@ -32,7 +32,10 @@
         {
             if (_map.TryGetValue(p, out var replacement))
             {
-                p = replacement;
+                if (replacement is ParameterExpression pe)
+                    p = pe;
+                else
+                    return replacement;
             }
 
             return base.VisitParameter(p);

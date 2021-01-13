@@ -7,14 +7,14 @@
     public interface IAndLogicOperation<TEntity> : ILogicOperationT<IAndQueryBuilderResult<TEntity>, TEntity>
     {
         /// <summary>
-        /// Logic NOT.
+        /// Negates the first trailing builder expression.
         /// </summary>
         IAndLogicOperation<TEntity> Not { get; }
 
         /// <summary>
-        /// Добавляет логическую операцию только при выполнении услович
+        /// Evaluates the first trailing builder expression if only the specified condition evaluates to true.
         /// </summary>
-        /// <param name="condition">Условие добавления операции</param>
+        /// <param name="condition">The condition to evaluate.</param>
         IAndLogicOperation<TEntity> Conditional(bool condition);
     }
 }
