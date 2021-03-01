@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -33,7 +34,7 @@
         /// <summary>
         /// Constructs a strategy,
         /// </summary>
-        /// <param name="options">A filtering options</param>
+        /// <param name="options">A filtering options.</param>
         public OperationStrategy(BuilderOptions options = BuilderOptions.Default)
         {
             _options = options;
@@ -83,29 +84,29 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Equals<TEntity, TValue>(
-            [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
-            TValue input)
+        public Expression<Func<TEntity, bool>> Equals<TEntity, TInput>(
+            [NotNull] Expression<Func<TEntity, TInput>> propertyExpression,
+            TInput input)
         {
-            if (IgnoreDefaults && Equals(input, default(TValue)))
+            if (IgnoreDefaults && Equals(input, default(TInput)))
                 return null;
 
-            if (typeof(TValue) == typeof(string))
+            if (typeof(TInput) == typeof(string))
                 return StringEquals(propertyExpression as Expression<Func<TEntity, string>>, input as string);
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Equal(
                     propertyExpression.Body,
-                    Expression.Constant(input, typeof(TValue))),
+                    Expression.Constant(input, typeof(TInput))),
                 propertyExpression.Parameters);
 
             return filter;
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> In<TEntity, TValue>(
-            [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
-            [CanBeNull] IEnumerable<TValue> input)
+        public Expression<Func<TEntity, bool>> In<TEntity, TInput>(
+            [NotNull] Expression<Func<TEntity, TInput>> propertyExpression,
+            [CanBeNull] IEnumerable<TInput> input)
         {
             _ = propertyExpression ??
                 throw new ArgumentNullException(nameof(propertyExpression), "Expression cannot be null.");
@@ -116,16 +117,16 @@
             _ = input ?? throw new ArgumentNullException(nameof(input), "Input cannot be null.");
 
             var inputParameter = Expression.Constant(
-                typeof(TValue) == typeof(string)
-                    ? (IEnumerable<TValue>)((IEnumerable<string>)input).Select(x => ToLower(x))
+                typeof(TInput) == typeof(string)
+                    ? (IEnumerable<TInput>)((IEnumerable<string>)input).Select(x => ToLower(x))
                     : input);
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
                     null,
-                    CollectionContainsMethod.MakeGenericMethod(typeof(TValue)),
+                    CollectionContainsMethod.MakeGenericMethod(typeof(TInput)),
                     inputParameter,
-                    typeof(TValue) == typeof(string)
+                    typeof(TInput) == typeof(string)
                         ? ToLower(propertyExpression.Body)
                         : propertyExpression.Body),
                 propertyExpression.Parameters);
@@ -134,9 +135,9 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Any<TEntity, TValue>(
-            [NotNull] Expression<Func<TEntity, ICollection<TValue>>> collectionSelector,
-            [CanBeNull] Expression<Func<TValue, bool>> predicate)
+        public Expression<Func<TEntity, bool>> Any<TEntity, TInput>(
+            [NotNull] Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
+            [CanBeNull] Expression<Func<TInput, bool>> predicate)
         {
             _ = collectionSelector ??
                 throw new ArgumentNullException(nameof(collectionSelector), "Expression cannot be null");
@@ -144,7 +145,7 @@
             if (predicate == null)
                 return null;
 
-            var anyMethod = AnyMethod.MakeGenericMethod(typeof(TValue));
+            var anyMethod = AnyMethod.MakeGenericMethod(typeof(TInput));
 
             Expression<Func<TEntity, bool>> result = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
@@ -155,6 +156,57 @@
                 collectionSelector.Parameters);
 
             return result;
+        }
+
+        /// <inheritdoc />
+        public Expression<Func<TEntity, bool>> Where<TEntity, TInput>(
+            [NotNull] Expression<Func<TEntity, TInput, bool>> predicate,
+            TInput input)
+        {
+            if (IgnoreDefaults && Equals(input, default(TInput)))
+                return null;
+
+            if (typeof(TInput) == typeof(string))
+                return StringWhere(predicate as Expression<Func<TEntity, string, bool>>, input as string);
+
+            var replacement = new Dictionary<ParameterExpression, Expression>
+            {
+                { predicate.Parameters.Last(), Expression.Constant(input, typeof(TInput)) }
+            };
+
+            var body = ParameterRebinder.ReplaceParameters(
+                replacement,
+                predicate.Body);
+
+            var filter = Expression.Lambda<Func<TEntity, bool>>(
+                body,
+                predicate.Parameters.First());
+
+            return filter;
+        }
+
+        /// <inheritdoc cref="Where{TEntity,TInput}"/>
+        private Expression<Func<TEntity, bool>> StringWhere<TEntity>(
+            [NotNull] Expression<Func<TEntity, string, bool>> predicate,
+            string input)
+        {
+            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
+                return null;
+
+            var replacement = new Dictionary<ParameterExpression, Expression>
+            {
+                { predicate.Parameters.Last(), Expression.Constant(ToLower(input), typeof(string)) }
+            };
+
+            var body = ParameterRebinder.ReplaceParameters(
+                replacement,
+                predicate.Body);
+
+            var filter = Expression.Lambda<Func<TEntity, bool>>(
+                body,
+                predicate.Parameters.First());
+
+            return filter;
         }
 
         private Expression ToLower(Expression property)
