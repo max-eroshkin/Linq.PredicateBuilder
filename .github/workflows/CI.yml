@@ -21,14 +21,14 @@ on:
     branches:
       - develop
       - master
-      - release/**
-      - hotfix/**
+      - 'release/**'
+      - 'hotfix/**'
   pull_request:
     branches:
       - develop
       - master
-      - release/**
-      - hotfix/**
+      - 'release/**'
+      - 'hotfix/**'
 
 jobs:
   ubuntu-18_04:
@@ -36,5 +36,12 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
+      - name: Cache .nuke/temp, ~/.nuget/packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            .nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       - name: Run './build.cmd Test'
         run: ./build.cmd Test

@@ -250,6 +250,8 @@ paket-files/
 # FAKE - F# Make
 .fake/
 
+.nuke/
+
 # JetBrains Rider
 .idea/
 *.sln.iml
