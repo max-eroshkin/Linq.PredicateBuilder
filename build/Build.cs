@@ -1,4 +1,5 @@
 using System.Linq;
+using Bimlab.Nuke.Components;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Execution;
@@ -17,17 +18,17 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     OnPullRequestBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
     OnPushBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
     InvokedTargets = new[] { nameof(Test) })]
-class Build : NukeBuild
+class Build : NukeBuild, IPublish
 {
-    public static int Main() => Execute<Build>(x => x.Compile);
+    public static int Main() => Execute<Build>(x => x.From<ICompile>().Compile);
 
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Solution("Linq.PredicateBuilder.sln")]
+    public readonly Solution Solution;
 
-    [Solution] readonly Solution Solution;
+    Solution IHazSolution.Solution => Solution;
 
     Target Clean => _ => _
-        .Before(Restore)
+        .Before<IRestore>()
         .Executes(() =>
         {
             GlobDirectories(Solution.Directory, "**/bin", "**/obj")
@@ -35,31 +36,17 @@ class Build : NukeBuild
                 .ForEach(DeleteDirectory);
         });
 
-    Target Restore => _ => _
-        .Executes(() =>
-        {
-            DotNetRestore(s => s
-                .SetProjectFile(Solution)
-                .EnableForce());
-        });
-
-    Target Compile => _ => _
-        .DependsOn(Restore)
-        .Executes(() =>
-        {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .EnableNoRestore());
-        });
-
     Target Test => _ => _
-        .DependsOn(Compile)
+        .DependsOn<ICompile>()
         .Executes(() =>
         {
             DotNetTest(s => s
                 .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
+                .SetConfiguration(From<IHazConfiguration>().Configuration)
                 .EnableNoBuild());
         });
+    
+    T From<T>()
+        where T : INukeBuild
+        => (T)(object)this;
 }
