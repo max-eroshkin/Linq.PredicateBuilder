@@ -1,8 +1,8 @@
 ﻿namespace Linq.PredicateBuilder
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -165,6 +165,21 @@
         {
             if (IgnoreDefaults && Equals(input, default(TInput)))
                 return null;
+
+            if (IgnoreDefaults && input is IEnumerable enumerable)
+            {
+                var enumerator = enumerable.GetEnumerator();
+                var disposable = enumerator as IDisposable;
+                try
+                {
+                    if (!enumerator.MoveNext())
+                        return null;
+                }
+                finally
+                {
+                    disposable?.Dispose();
+                }
+            }
 
             if (typeof(TInput) == typeof(string))
                 return StringWhere(predicate as Expression<Func<TEntity, string, bool>>, input as string);

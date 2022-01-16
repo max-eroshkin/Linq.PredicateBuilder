@@ -1,5 +1,6 @@
 ﻿namespace BuilderTests
 {
+    using System;
     using System.Linq;
     using FluentAssertions;
     using Linq.PredicateBuilder;
@@ -12,7 +13,7 @@
         public void CaseSensitive()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.Name, "aaAa1"),
+                _ => _.Where((x, input) => x.Name == input, "aaAa1"),
                 BuilderOptions.None);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
@@ -22,7 +23,7 @@
         public void CaseSensitiveEmpty()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.Name, "aAAa1"),
+                _ => _.Where((x, input) => x.Name == input, "aAAa1"),
                 BuilderOptions.None);
 
             result.Should().BeEmpty();
@@ -32,7 +33,7 @@
         public void IgnoreCase()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.Name, "aAAa1"),
+                _ => _.Where((x, input) => x.Name.ToLower() == input, "aAAa1"),
                 BuilderOptions.IgnoreCase);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
@@ -42,7 +43,7 @@
         public void IgnoreCaseEmpty()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.Name, "aaAb3"),
+                _ => _.Where((x, input) => x.Name.ToLower() == input, "aaAb3"),
                 BuilderOptions.IgnoreCase);
 
             result.Should().BeEmpty();
@@ -52,7 +53,7 @@
         public void TrimInput()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.Name, " aaAa1 "),
+                _ => _.Where((x, input) => x.Name == input, " aaAa1 "),
                 BuilderOptions.Trim);
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1));
@@ -62,7 +63,7 @@
         public void NonString()
         {
             var result = DataSet.Build(
-                _ => _.Equals(x => x.ParentId, 1));
+                _ => _.Where((x, input) => x.ParentId == input, 1));
 
             result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 3));
         }
@@ -71,7 +72,7 @@
         public void IgnoreNullStringInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.Name, null));
+                _ => _.Where((x, input) => x.Name == input, (string)null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -80,7 +81,7 @@
         public void IgnoreNullLongInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.ParentId, null));
+                _ => _.Where((x, input) => x.ParentId == input, (long?)null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -89,7 +90,7 @@
         public void IgnoreEmptyInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.Name, string.Empty));
+                _ => _.Where((x, input) => x.Name == input, string.Empty));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -98,26 +99,45 @@
         public void IgnoreWhitespaceInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.Name, " "));
+                _ => _.Where((x, input) => x.Name == input, " "));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
 
         [Fact]
-        public void UseDefaultOrEmptyOrWhitespeceInput()
+        public void IgnoreEmptyEnumerableInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.Name, null),
+                _ => _.Where((x, input) => input.Contains(x.Name), Array.Empty<string>()));
+
+            resultNull.Should().BeEquivalentTo(DataSet);
+        }
+
+        [Fact]
+        public void EnumerableInput()
+        {
+            var set = new[] { "aaAa1", "baBa" };
+            var resultNull = DataSet.Build(
+                _ => _.Where((x, input) => input.Contains(x.Name), set));
+
+            resultNull.Should().BeEquivalentTo(DataSet.AsEnumerable().Where(x => set.Contains(x.Name)));
+        }
+
+        [Fact]
+        public void UseDefaultOrEmptyOrWhitespaceInput()
+        {
+            var resultNull = DataSet.Build(
+                _ => _.Where((x, input) => x.Name == input, (string)null),
                 BuilderOptions.None);
 
             resultNull.Should().BeEmpty();
         }
 
         [Fact]
-        public void UseDefaulNonStringInput()
+        public void UseDefaultNonStringInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Equals(x => x.ParentId, null),
+                _ => _.Where((x, input) => x.ParentId == input, (long?)null),
                 BuilderOptions.None);
 
             resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
