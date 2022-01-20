@@ -35,7 +35,6 @@
 
     <ItemGroup>
       <Compile Remove="ConditionalWhere.cs" />
-      <Compile Remove="NestedAny.cs" />
     </ItemGroup>
 
 </Project>

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
 
 /// <summary>
 /// Contains filtering methods.
@@ -40,7 +39,7 @@ public interface IOperationStrategy
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TValue">Тип свойства</typeparam>
     Expression<Func<TEntity, bool>>? Equals<TEntity, TValue>(
-        [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
+        Expression<Func<TEntity, TValue>> propertyExpression,
         TValue input);
 
     /// <summary>
@@ -51,7 +50,7 @@ public interface IOperationStrategy
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TValue">Тип свойства</typeparam>
     Expression<Func<TEntity, bool>>? In<TEntity, TValue>(
-        [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
+        Expression<Func<TEntity, TValue>> propertyExpression,
         IEnumerable<TValue>? input);
 
     /// <summary>
@@ -61,8 +60,7 @@ public interface IOperationStrategy
     /// <param name="predicate">Property selector</param>
     /// <typeparam name="TEntity">Entity type</typeparam>
     /// <typeparam name="TValue">Тип свойства коллекции many-to-many</typeparam>
-    [CanBeNull]
-    Expression<Func<TEntity, bool>> Any<TEntity, TValue>(
-        [NotNull] Expression<Func<TEntity, ICollection<TValue>>> collectionSelector,
-        [CanBeNull] Expression<Func<TValue, bool>> predicate);
+    Expression<Func<TEntity, bool>>? Any<TEntity, TValue>(
+        Expression<Func<TEntity, ICollection<TValue>>> collectionSelector,
+        Expression<Func<TValue, bool>>? predicate);
 }
