@@ -52,7 +52,7 @@ public interface IOperationStrategy
     /// <typeparam name="TValue">Тип свойства</typeparam>
     Expression<Func<TEntity, bool>>? In<TEntity, TValue>(
         [NotNull] Expression<Func<TEntity, TValue>> propertyExpression,
-        [CanBeNull] IEnumerable<TValue> input);
+        IEnumerable<TValue>? input);
 
     /// <summary>
     /// Contains predicate

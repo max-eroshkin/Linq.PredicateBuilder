@@ -106,7 +106,7 @@
         }
 
         private bool Evaluate(
-            Func<ILogicOperation<long>, IQueryBuilderResult<long>> builder)
+            Func<IAndOrOperator<long>, IResult<long>> builder)
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
 
