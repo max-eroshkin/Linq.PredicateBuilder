@@ -17,9 +17,9 @@ public static class PredicateExtensions
     /// <param name="first">The first expression.</param>
     /// <param name="second">The second expression.</param>
     /// <typeparam name="T">Element type.</typeparam>
-    public static Expression<Func<T, bool>> And<T>(
-        [CanBeNull] this Expression<Func<T, bool>> first,
-        [CanBeNull] Expression<Func<T, bool>> second)
+    public static Expression<Func<T, bool>>? And<T>(
+        [CanBeNull] this Expression<Func<T, bool>>? first,
+        [CanBeNull] Expression<Func<T, bool>>? second)
     {
         if (first != null && second != null)
             return first.Compose(second, Expression.AndAlso);
@@ -37,9 +37,9 @@ public static class PredicateExtensions
     /// <param name="first">The first expression.</param>
     /// <param name="second">The second expression.</param>
     /// <typeparam name="T">Element type.</typeparam>
-    public static Expression<Func<T, bool>> Or<T>(
-        [CanBeNull] this Expression<Func<T, bool>> first,
-        [CanBeNull] Expression<Func<T, bool>> second)
+    public static Expression<Func<T, bool>>? Or<T>(
+        [CanBeNull] this Expression<Func<T, bool>>? first,
+        [CanBeNull] Expression<Func<T, bool>>? second)
     {
         if (first != null && second != null)
             return first.Compose(second, Expression.OrElse);
@@ -73,7 +73,7 @@ public static class PredicateExtensions
     /// <typeparam name="T">Element type.</typeparam>
     private static Expression<T> Compose<T>(
         [NotNull] this Expression<T> first,
-        [NotNull] Expression<T> second,
+        [NotNull] Expression<T>? second,
         [NotNull] Func<Expression, Expression, Expression> merge)
     {
         var map = first.Parameters

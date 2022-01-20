@@ -19,7 +19,7 @@ public class Start<TEntity> : IAndOrOperator<TEntity>
 
     private NotOperator<TEntity> GetNotOperator() => new(this, Strategy);
 
-    public Expression<Func<TEntity, bool>> GetExpression(Expression<Func<TEntity, bool>> predicate)
+    public Expression<Func<TEntity, bool>>? GetExpression(Expression<Func<TEntity, bool>>? predicate)
     {
         return predicate;
     }

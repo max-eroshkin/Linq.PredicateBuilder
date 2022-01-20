@@ -13,8 +13,9 @@ public static class ContainsExtensions
         var strategy = options == null 
             ? oper.Strategy 
             : new OperationStrategy(options.Value);
+        var expression = strategy.Contains(propertyExpression, input);
         
-        return new Result<TEntity>(strategy.Contains(propertyExpression, input), oper.Strategy);
+        return new Result<TEntity>(oper.GetExpression(expression), oper.Strategy);
     }
 
     public static IAndResult<TEntity> Contains<TEntity>(

@@ -2,16 +2,22 @@
 
 public static class ConditionalExtensions
 {
-    public static IAndOperator<TEntity> Conditional<TEntity>(this IAndOperator<TEntity> oper)
+    private static IgnogreOperator<TEntity> GetOperatorInternal<TEntity>(IOperator<TEntity> oper, bool condition)
     {
-        return default;
+        return new IgnogreOperator<TEntity>(oper, condition);
     }
-    public static IOrOperator<TEntity> Conditional<TEntity>(this IOrOperator<TEntity> oper)
+    
+    public static IAndOperator<TEntity> Conditional<TEntity>(this IAndOperator<TEntity> oper, bool condition)
     {
-        return default;
+        return GetOperatorInternal(oper, condition);
+    }
+    
+    public static IOrOperator<TEntity> Conditional<TEntity>(this IOrOperator<TEntity> oper, bool condition)
+    {
+        return GetOperatorInternal(oper, condition);
     }    
-    public static IAndOrOperator<TEntity> Conditional<TEntity>(this IAndOrOperator<TEntity> oper)
+    public static IAndOrOperator<TEntity> Conditional<TEntity>(this IAndOrOperator<TEntity> oper, bool condition)
     {
-        return default;
+        return GetOperatorInternal(oper, condition);
     }
 }
