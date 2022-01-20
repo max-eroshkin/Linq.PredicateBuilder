@@ -20,5 +20,5 @@ public class Result<TEntity> : IFullResult<TEntity>
 
     public IAndOperator<TEntity> And => new AndOperator<TEntity>(GetExpression(), _strategy);
 
-    public IOrOperator<TEntity> Or { get; }
+    public IOrOperator<TEntity> Or => new OrOperator<TEntity>(GetExpression(), _strategy);
 }

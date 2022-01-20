@@ -21,3 +21,22 @@ public class AndOperator<TEntity> : IAndOperator<TEntity>
         return _predicate.And(predicate);
     }
 }
+public class OrOperator<TEntity> : IOrOperator<TEntity>
+{
+    private readonly Expression<Func<TEntity, bool>>? _predicate;
+
+    public OrOperator(Expression<Func<TEntity, bool>>? predicate, IOperationStrategy strategy)
+    {
+        Strategy = strategy;
+        _predicate = predicate;
+    }
+
+    public IOrOperator<TEntity> Not => new NotOperator<TEntity>(this, Strategy);
+
+    public IOperationStrategy Strategy { get; }
+
+    public Expression<Func<TEntity, bool>>? GetExpression(Expression<Func<TEntity, bool>>? predicate)
+    {
+        return _predicate.Or(predicate);
+    }
+}
