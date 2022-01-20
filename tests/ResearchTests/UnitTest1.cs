@@ -4,7 +4,7 @@ namespace ResearchTests;
 
 using System;
 using System.Linq.Expressions;
-using Research;
+using Linq.PredicateBuilder;
 
 public class UnitTest1
 {

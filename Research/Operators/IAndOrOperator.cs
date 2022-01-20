@@ -1,6 +1,6 @@
-﻿namespace Research;
+﻿namespace Linq.PredicateBuilder;
 
 public interface IAndOrOperator<TEntity> : IAndOperator<TEntity>, IOrOperator<TEntity>
 {
-    IAndOrOperator<TEntity> Not { get; }
+    new IAndOrOperator<TEntity> Not { get; }
 }

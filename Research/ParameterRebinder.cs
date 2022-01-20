@@ -1,4 +1,4 @@
-﻿namespace Research;
+﻿namespace Linq.PredicateBuilder;
 
 using System.Collections.Generic;
 using System.Linq.Expressions;

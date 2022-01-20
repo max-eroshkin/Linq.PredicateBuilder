@@ -30,7 +30,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\source\Linq.PredicateBuilder\Linq.PredicateBuilder.csproj" />
+      <ProjectReference Include="..\..\Research\Research.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="ConditionalWhere.cs" />
+      <Compile Remove="Combine.cs" />
+      <Compile Remove="In.cs" />
+      <Compile Remove="NestedAny.cs" />
+      <Compile Remove="Not.cs" />
+      <Compile Remove="Where.cs" />
     </ItemGroup>
 
 </Project>

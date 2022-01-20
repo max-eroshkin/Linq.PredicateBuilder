@@ -1,4 +1,4 @@
-﻿namespace Research;
+﻿namespace Linq.PredicateBuilder;
 
 using System;
 using System.Linq;

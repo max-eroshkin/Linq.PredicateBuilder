@@ -1,4 +1,4 @@
-﻿namespace Research;
+﻿namespace Linq.PredicateBuilder;
 
 public interface IAndOperator<TEntity> : IOperator<TEntity>
 {
