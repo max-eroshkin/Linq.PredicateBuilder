@@ -33,8 +33,4 @@
       <ProjectReference Include="..\..\Research\Research.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="ConditionalWhere.cs" />
-    </ItemGroup>
-
 </Project>
