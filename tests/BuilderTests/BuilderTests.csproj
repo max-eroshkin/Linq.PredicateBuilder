@@ -31,6 +31,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Research\Research.csproj" />
+      <ProjectReference Include="..\..\source\Linq.PredicateBuilder\Linq.PredicateBuilder.csproj" />
     </ItemGroup>
 
 </Project>

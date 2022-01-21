@@ -2,6 +2,9 @@
 
 using System.Linq.Expressions;
 
+/// <summary>
+/// Contains 'Contains' extension methods.
+/// </summary>
 public static class ContainsExtensions
 {
     private static Result<TEntity> GetResultInternal<TEntity>(
@@ -18,6 +21,14 @@ public static class ContainsExtensions
         return new Result<TEntity>(oper.GetExpression(expression), oper.Strategy);
     }
 
+    /// <summary>
+    /// Builds a predicate indicating whether a specified substring occurs within the string
+    /// defined by a property selector expression.
+    /// </summary>
+    /// <param name="oper">The operator instance.</param>
+    /// <param name="propertyExpression">The property selector expression.</param>
+    /// <param name="input">The string to seek.</param>
+    /// <param name="options">The builder options.</param>
     public static IAndResult<TEntity> Contains<TEntity>(
         this IAndOperator<TEntity> oper,
         Expression<Func<TEntity, string>> propertyExpression,
@@ -25,6 +36,14 @@ public static class ContainsExtensions
         BuilderOptions? options = null)
         => GetResultInternal(oper, propertyExpression, input, options);
 
+    /// <summary>
+    /// Builds a predicate indicating whether a specified substring occurs within the string
+    /// defined by a property selector expression.
+    /// </summary>
+    /// <param name="oper">The operator instance.</param>
+    /// <param name="propertyExpression">The property selector expression.</param>
+    /// <param name="input">The string to seek.</param>
+    /// <param name="options">The builder options.</param>
     public static IOrResult<TEntity> Contains<TEntity>(
         this IOrOperator<TEntity> oper,
         Expression<Func<TEntity, string>> propertyExpression,
@@ -32,6 +51,14 @@ public static class ContainsExtensions
         BuilderOptions? options = null)
         => GetResultInternal(oper, propertyExpression, input, options);
 
+    /// <summary>
+    /// Builds a predicate indicating whether a specified substring occurs within the string
+    /// defined by a property selector expression.
+    /// </summary>
+    /// <param name="oper">The operator instance.</param>
+    /// <param name="propertyExpression">The property selector expression.</param>
+    /// <param name="input">The string to seek.</param>
+    /// <param name="options">The builder options.</param>
     public static IFullResult<TEntity> Contains<TEntity>(
         this IAndOrOperator<TEntity> oper,
         Expression<Func<TEntity, string>> propertyExpression,

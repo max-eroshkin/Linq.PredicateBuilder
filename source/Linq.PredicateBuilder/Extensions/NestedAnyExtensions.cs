@@ -12,7 +12,7 @@ public static class NestedAnyExtensions
         if (builder == null)
             throw new ArgumentException("Builder cannot be null", nameof(builder));
 
-        var init = new Start<TInput>(oper.Strategy);
+        var init = new BuilderInit<TInput>(oper.Strategy);
         return new(
             oper.GetExpression(oper.Strategy.Any(collectionSelector, builder(init).GetExpression())),
             oper.Strategy);
