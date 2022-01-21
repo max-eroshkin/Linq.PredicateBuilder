@@ -7,14 +7,6 @@ using System.Linq.Expressions;
 /// </summary>
 public static class InExtensions
 {
-    private static Result<TEntity> GetResultInternal<TEntity, TValue>(
-        IOperator<TEntity> oper,
-        Expression<Func<TEntity, TValue>> propertyExpression,
-        IEnumerable<TValue>? input)
-    {
-        return new(oper.GetExpression(oper.Strategy.In(propertyExpression, input)), oper.Strategy);
-    }
-
     /// <summary>
     /// Builds a predicate indicating whether the value defined by a property selector expression
     /// is contained in a specified collection.
@@ -59,4 +51,12 @@ public static class InExtensions
         Expression<Func<TEntity, TInput>> propertyExpression,
         IEnumerable<TInput>? input)
         => GetResultInternal(oper, propertyExpression, input);
+
+    private static Result<TEntity> GetResultInternal<TEntity, TValue>(
+        IOperator<TEntity> oper,
+        Expression<Func<TEntity, TValue>> propertyExpression,
+        IEnumerable<TValue>? input)
+    {
+        return new(oper.GetExpression(oper.Strategy.In(propertyExpression, input)), oper.Strategy);
+    }
 }

@@ -20,15 +20,17 @@ public class BuilderInit<TEntity> : IAndOrOperator<TEntity>
     /// <inheritdoc />
     public IAndOrOperator<TEntity> Not => GetNotOperator();
 
+    /// <inheritdoc />
     IAndOperator<TEntity> IAndOperator<TEntity>.Not => GetNotOperator();
 
+    /// <inheritdoc />
     IOrOperator<TEntity> IOrOperator<TEntity>.Not => GetNotOperator();
-
-    private NotOperator<TEntity> GetNotOperator() => new(this, Strategy);
 
     /// <inheritdoc />
     public Expression<Func<TEntity, bool>>? GetExpression(Expression<Func<TEntity, bool>>? predicate)
     {
         return predicate;
     }
+
+    private NotOperator<TEntity> GetNotOperator() => new(this, Strategy);
 }

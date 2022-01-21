@@ -31,7 +31,7 @@
         [Fact]
         public void IgnoreDefault()
         {
-            long[] requestIdList = null;
+            long[]? requestIdList = null;
             var result = DataSet.Build(
                 _ => _.Any(p => p.Requests, n => n.In(x => x.Id, requestIdList)));
 

@@ -1,14 +1,10 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-    using System.Linq;
     using System.Linq.Expressions;
-    using JetBrains.Annotations;
 
     /// <summary>
     /// Predicate extensions.
     /// </summary>
-    [PublicAPI]
     public static class PredicateExtensions
     {
         /// <summary>

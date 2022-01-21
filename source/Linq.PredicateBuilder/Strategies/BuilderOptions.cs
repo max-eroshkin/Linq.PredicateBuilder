@@ -1,7 +1,5 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-
     /// <summary>
     /// Contains predicate builder options.
     /// </summary>

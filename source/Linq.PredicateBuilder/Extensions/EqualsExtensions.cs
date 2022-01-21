@@ -7,20 +7,6 @@ using System.Linq.Expressions;
 /// </summary>
 public static class EqualsExtensions
 {
-    private static Result<TEntity> GetResultInternal<TEntity, TInput>(
-        IOperator<TEntity> oper,
-        Expression<Func<TEntity, TInput>> propertyExpression,
-        TInput input, 
-        BuilderOptions? options = null)
-    {
-        var strategy = options == null 
-            ? oper.Strategy 
-            : new OperationStrategy(options.Value);
-        var expression = strategy.Equals(propertyExpression, input);
-        
-        return new Result<TEntity>(oper.GetExpression(expression), oper.Strategy);
-    }
-
     /// <summary>
     /// Builds a predicate indicating whether a specified input value is equal to the value
     /// defined by a property selector expression.
@@ -34,10 +20,10 @@ public static class EqualsExtensions
     public static IAndResult<TEntity> Equals<TEntity, TInput>(
         this IAndOperator<TEntity> oper,
         Expression<Func<TEntity, TInput>> propertyExpression,
-        TInput input, 
+        TInput input,
         BuilderOptions? options = null)
         => GetResultInternal(oper, propertyExpression, input, options);
-    
+
     /// <summary>
     /// Builds a predicate indicating whether a specified input value is equal to the value
     /// defined by a property selector expression.
@@ -51,10 +37,10 @@ public static class EqualsExtensions
     public static IOrResult<TEntity> Equals<TEntity, TInput>(
         this IOrOperator<TEntity> oper,
         Expression<Func<TEntity, TInput>> propertyExpression,
-        TInput input, 
+        TInput input,
         BuilderOptions? options = null)
         => GetResultInternal(oper, propertyExpression, input, options);
-    
+
     /// <summary>
     /// Builds a predicate indicating whether a specified input value is equal to the value
     /// defined by a property selector expression.
@@ -68,7 +54,21 @@ public static class EqualsExtensions
     public static IFullResult<TEntity> Equals<TEntity, TInput>(
         this IAndOrOperator<TEntity> oper,
         Expression<Func<TEntity, TInput>> propertyExpression,
-        TInput input, 
+        TInput input,
         BuilderOptions? options = null)
         => GetResultInternal(oper, propertyExpression, input, options);
+
+    private static Result<TEntity> GetResultInternal<TEntity, TInput>(
+        IOperator<TEntity> oper,
+        Expression<Func<TEntity, TInput>> propertyExpression,
+        TInput input,
+        BuilderOptions? options = null)
+    {
+        var strategy = options == null
+            ? oper.Strategy
+            : new OperationStrategy(options.Value);
+        var expression = strategy.Equals(propertyExpression, input);
+
+        return new Result<TEntity>(oper.GetExpression(expression), oper.Strategy);
+    }
 }

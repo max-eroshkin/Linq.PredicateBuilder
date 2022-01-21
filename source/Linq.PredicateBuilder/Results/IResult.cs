@@ -2,6 +2,10 @@
 
 using System.Linq.Expressions;
 
+/// <summary>
+/// Represents a builder result.
+/// </summary>
+/// <typeparam name="TEntity">The entity type.</typeparam>
 public interface IResult<TEntity>
 {
     /// <summary>

@@ -7,20 +7,6 @@ using System.Linq.Expressions;
 /// </summary>
 public static class NestedAnyExtensions
 {
-    private static Result<TEntity> GetResultInternal<TEntity, TInput>(
-        IOperator<TEntity> oper,
-        Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
-        Func<IAndOrOperator<TInput>, IResult<TInput>> builder)
-    {
-        if (builder == null)
-            throw new ArgumentException("Builder cannot be null", nameof(builder));
-
-        var init = new BuilderInit<TInput>(oper.Strategy);
-        return new(
-            oper.GetExpression(oper.Strategy.Any(collectionSelector, builder(init).GetExpression())),
-            oper.Strategy);
-    }
-
     /// <summary>
     /// Builds a predicate based on filter for the nested collection property
     /// defined by a property selector expression.
@@ -65,4 +51,18 @@ public static class NestedAnyExtensions
         Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
         Func<IAndOrOperator<TInput>, IResult<TInput>> builder)
         => GetResultInternal(oper, collectionSelector, builder);
+
+    private static Result<TEntity> GetResultInternal<TEntity, TInput>(
+        IOperator<TEntity> oper,
+        Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
+        Func<IAndOrOperator<TInput>, IResult<TInput>> builder)
+    {
+        if (builder == null)
+            throw new ArgumentException("Builder cannot be null", nameof(builder));
+
+        var init = new BuilderInit<TInput>(oper.Strategy);
+        return new(
+            oper.GetExpression(oper.Strategy.Any(collectionSelector, builder(init).GetExpression())),
+            oper.Strategy);
+    }
 }

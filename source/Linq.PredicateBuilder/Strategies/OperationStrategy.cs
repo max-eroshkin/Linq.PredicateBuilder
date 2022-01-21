@@ -1,9 +1,6 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
     using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
 
@@ -91,10 +88,12 @@
                 return null;
 
             if (typeof(TInput) == typeof(string))
+            {
                 return StringEquals(
                     propertyExpression as Expression<Func<TEntity, string>>
                     ?? throw new ArgumentException("Cannot convert expression.", nameof(propertyExpression)),
                     input as string);
+            }
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Equal(
@@ -184,10 +183,12 @@
             }
 
             if (typeof(TInput) == typeof(string))
+            {
                 return StringWhere(
                     predicate as Expression<Func<TEntity, string, bool>>
                     ?? throw new ArgumentException("Cannot convert expression.", nameof(predicate)),
                     input as string);
+            }
 
             var replacement = new Dictionary<ParameterExpression, Expression>
             {

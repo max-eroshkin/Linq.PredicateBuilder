@@ -72,7 +72,7 @@
         public void IgnoreNullStringInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Where((x, input) => x.Name == input, (string)null));
+                _ => _.Where((x, input) => x.Name == input, (string?)null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -127,7 +127,7 @@
         public void UseDefaultOrEmptyOrWhitespaceInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Where((x, input) => x.Name == input, (string)null),
+                _ => _.Where((x, input) => x.Name == input, (string?)null),
                 BuilderOptions.None);
 
             resultNull.Should().BeEmpty();

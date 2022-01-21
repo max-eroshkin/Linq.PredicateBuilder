@@ -1,14 +1,10 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-    using System.Linq;
     using System.Linq.Expressions;
-    using JetBrains.Annotations;
 
     /// <summary>
     /// Extensions for IQueryable.
     /// </summary>
-    [PublicAPI]
     public static class QueryableBuilderExtensions
     {
         /// <summary>

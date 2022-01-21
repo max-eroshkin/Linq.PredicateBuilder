@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 /// <summary>
 /// Represents logical NOT.
 /// </summary>
+/// <typeparam name="TEntity">The entity type.</typeparam>
 public class NotOperator<TEntity> : IAndOrOperator<TEntity>
 {
     private readonly IOperator<TEntity> _oper;
@@ -18,12 +19,6 @@ public class NotOperator<TEntity> : IAndOrOperator<TEntity>
     {
         _oper = oper;
         Strategy = strategy;
-    }
-
-    /// <inheritdoc />
-    public Expression<Func<TEntity, bool>>? GetExpression(Expression<Func<TEntity, bool>>? predicate)
-    {
-        return _oper.GetExpression(predicate.Not());
     }
 
     /// <inheritdoc />
@@ -43,6 +38,12 @@ public class NotOperator<TEntity> : IAndOrOperator<TEntity>
     /// Represents logical NOT.
     /// </summary>
     IOrOperator<TEntity> IOrOperator<TEntity>.Not => GetNotOperator();
+
+    /// <inheritdoc />
+    public Expression<Func<TEntity, bool>>? GetExpression(Expression<Func<TEntity, bool>>? predicate)
+    {
+        return _oper.GetExpression(predicate.Not());
+    }
 
     private NotOperator<TEntity> GetNotOperator() => new(this, Strategy);
 }
