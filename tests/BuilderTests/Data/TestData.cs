@@ -33,7 +33,5 @@
                 },
             }.AsQueryable();
         }
-
-        ////public static IQueryable<Item> DataSet => _dataSet;
     }
 }

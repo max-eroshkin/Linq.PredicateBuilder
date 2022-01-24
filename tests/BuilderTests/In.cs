@@ -95,5 +95,29 @@
 
             f.Should().Throw<ArgumentNullException>();
         }
+        
+        [Fact]
+        public void CombineAnd()
+        {
+            var result = DataSet.Build(
+                _ => _
+                    .Where(_ => true).And
+                    .In(x => x.Name, new[] { "aaAa1", "baBa" }),
+                BuilderOptions.None);
+
+            result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 3));
+        } 
+        
+        [Fact]
+        public void CombineOr()
+        {
+            var result = DataSet.Build(
+                _ => _
+                    .Where(_ => false).Or
+                    .In(x => x.Name, new[] { "aaAa1", "baBa" }),
+                BuilderOptions.None);
+
+            result.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 3));
+        }
     }
 }

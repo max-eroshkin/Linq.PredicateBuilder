@@ -142,5 +142,29 @@
 
             resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
         }
+
+        [Fact]
+        public void CombineAnd()
+        {
+            var resultNull = DataSet.Build(
+                _ => _
+                    .Where(_ => true).And
+                    .Where((x, input) => x.ParentId == input, (long?)null),
+                BuilderOptions.None);
+
+            resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
+        }
+
+        [Fact]
+        public void CombineOr()
+        {
+            var resultNull = DataSet.Build(
+                _ => _
+                    .Where(_ => false).Or
+                    .Where((x, input) => x.ParentId == input, (long?)null),
+                BuilderOptions.None);
+
+            resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
+        }
     }
 }

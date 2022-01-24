@@ -3,8 +3,11 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Predicate extensions.
+    /// Contains predicate extension methods.
     /// </summary>
+    /// <remarks>
+    /// Bases on <a href="https://github.com/lotosbin/BinbinPredicateBuilder">Binbin.Linq.PredicateBuilder</a>.
+    /// </remarks>
     public static class PredicateExtensions
     {
         /// <summary>
