@@ -137,7 +137,7 @@
 
         /// <inheritdoc />
         public Expression<Func<TEntity, bool>>? Any<TEntity, TInput>(
-            Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
+            Expression<Func<TEntity, IEnumerable<TInput>>> collectionSelector,
             Expression<Func<TInput, bool>>? predicate)
         {
             _ = collectionSelector ??

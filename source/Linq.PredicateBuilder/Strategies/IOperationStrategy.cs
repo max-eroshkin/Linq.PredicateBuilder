@@ -62,7 +62,7 @@
         /// <typeparam name="TEntity">The entity type.</typeparam>
         /// <typeparam name="TInput">The nested collection element type.</typeparam>
         Expression<Func<TEntity, bool>>? Any<TEntity, TInput>(
-            Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
+            Expression<Func<TEntity, IEnumerable<TInput>>> collectionSelector,
             Expression<Func<TInput, bool>>? predicate);
 
         /// <summary>
