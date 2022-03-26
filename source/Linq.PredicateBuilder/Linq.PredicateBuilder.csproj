@@ -22,7 +22,7 @@
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     <PropertyGroup>
-        <Version>1.0.0-dev02</Version>
+        <Version>1.0.0</Version>
         <Authors>Max Eroshkin</Authors>
         <Product>Linq.PredicateBuilder</Product>
         <Description>Linq.PredicateBuilder allows you to construct filtering expressions in run-time using fluent API and minimize boilerplate code such as null/empty checking and case ignoring.</Description>
