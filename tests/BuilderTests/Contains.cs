@@ -52,28 +52,28 @@
         [Fact]
         public void IgnoreNullInput()
         {
-            var resultNull = DataSet.Build(
+            var result = DataSet.Build(
                 _ => _.Contains(x => x.Name, null));
 
-            resultNull.Should().BeEquivalentTo(DataSet);
+            result.Should().BeEquivalentTo(DataSet);
         }
 
         [Fact]
         public void IgnoreEmptyInput()
         {
-            var resultNull = DataSet.Build(
+            var result = DataSet.Build(
                 _ => _.Contains(x => x.Name, string.Empty));
 
-            resultNull.Should().BeEquivalentTo(DataSet);
+            result.Should().BeEquivalentTo(DataSet);
         }
 
         [Fact]
         public void IgnoreWhitespaceInput()
         {
-            var resultNull = DataSet.Build(
+            var result = DataSet.Build(
                 _ => _.Contains(x => x.Name, " "));
 
-            resultNull.Should().BeEquivalentTo(DataSet);
+            result.Should().BeEquivalentTo(DataSet);
         }
 
         [Fact]
@@ -89,11 +89,39 @@
         [Fact]
         public void UseDefaultOrEmptyOrWhitespeceInput()
         {
-            var resultNull = DataSet.Build(
+            var result = DataSet.Build(
                 _ => _.Contains(x => x.Name, "  "),
                 BuilderOptions.None);
 
-            resultNull.Should().BeEmpty();
+            result.Should().BeEmpty();
+        }        
+        
+        [Fact]
+        public void CombineAnd()
+        {
+            var result = DataSet.Build(
+                _ => _
+                    .Contains(x => x.Name, "A").And
+                    .Contains(x => x.Name, "2"),
+                BuilderOptions.None);
+
+            var reference = DataSet.Where(x => x.Name.Contains("A") && x.Name.Contains("2"));
+
+            result.Should().BeEquivalentTo(reference);
+        }
+        
+        [Fact]
+        public void CombineOr()
+        {
+            var result = DataSet.Build(
+                _ => _
+                    .Contains(x => x.Name, "1").Or
+                    .Contains(x => x.Name, "2"),
+                BuilderOptions.None);
+
+            var reference = DataSet.Where(x => x.Name.Contains("1") || x.Name.Contains("2"));
+
+            result.Should().BeEquivalentTo(reference);
         }
     }
 }

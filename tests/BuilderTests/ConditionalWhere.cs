@@ -72,7 +72,7 @@
         public void IgnoreNullStringInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Where((x, input) => x.Name == input, (string)null));
+                _ => _.Where((x, input) => x.Name == input, (string?)null));
 
             resultNull.Should().BeEquivalentTo(DataSet);
         }
@@ -127,7 +127,7 @@
         public void UseDefaultOrEmptyOrWhitespaceInput()
         {
             var resultNull = DataSet.Build(
-                _ => _.Where((x, input) => x.Name == input, (string)null),
+                _ => _.Where((x, input) => x.Name == input, (string?)null),
                 BuilderOptions.None);
 
             resultNull.Should().BeEmpty();
@@ -138,6 +138,30 @@
         {
             var resultNull = DataSet.Build(
                 _ => _.Where((x, input) => x.ParentId == input, (long?)null),
+                BuilderOptions.None);
+
+            resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
+        }
+
+        [Fact]
+        public void CombineAnd()
+        {
+            var resultNull = DataSet.Build(
+                _ => _
+                    .Where(_ => true).And
+                    .Where((x, input) => x.ParentId == input, (long?)null),
+                BuilderOptions.None);
+
+            resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));
+        }
+
+        [Fact]
+        public void CombineOr()
+        {
+            var resultNull = DataSet.Build(
+                _ => _
+                    .Where(_ => false).Or
+                    .Where((x, input) => x.ParentId == input, (long?)null),
                 BuilderOptions.None);
 
             resultNull.Should().BeEquivalentTo(DataSet.Where(x => x.Id == 1 || x.Id == 2));

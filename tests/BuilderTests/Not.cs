@@ -34,5 +34,32 @@
 
             result.Should().BeEquivalentTo(DataSet.Where(x => !x.Name.ToLower().Contains("b")));
         }
+
+        [Fact]
+        public void NotNot()
+        {
+            var result = DataSet.Build(
+                _ => _.Not.Not.Contains(x => x.Name, "b"));
+
+            result.Should().BeEquivalentTo(DataSet.Where(x => x.Name.ToLower().Contains("b")));
+        }
+        
+        [Fact]
+        public void AndNotNot()
+        {
+            var result = DataSet.Build(
+                _ => _.Where(x => true).And.Not.Not.Contains(x => x.Name, "b"));
+
+            result.Should().BeEquivalentTo(DataSet.Where(x => x.Name.ToLower().Contains("b")));
+        }     
+        
+        [Fact]
+        public void OrNotNot()
+        {
+            var result = DataSet.Build(
+                _ => _.Where(x => false).Or.Not.Not.Contains(x => x.Name, "b"));
+
+            result.Should().BeEquivalentTo(DataSet.Where(x => x.Name.ToLower().Contains("b")));
+        }
     }
 }

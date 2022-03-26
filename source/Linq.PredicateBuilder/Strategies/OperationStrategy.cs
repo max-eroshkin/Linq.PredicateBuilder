@@ -1,12 +1,8 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
     using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using JetBrains.Annotations;
 
     /// <inheritdoc />
     public class OperationStrategy : IOperationStrategy
@@ -47,9 +43,9 @@
         private bool TrimStrings => (_options & BuilderOptions.Trim) != 0;
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Contains<TEntity>(
+        public Expression<Func<TEntity, bool>>? Contains<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
-            string input)
+            string? input)
         {
             if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
@@ -67,9 +63,9 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> StringEquals<TEntity>(
+        public Expression<Func<TEntity, bool>>? StringEquals<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
-            string input)
+            string? input)
         {
             if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
@@ -84,15 +80,20 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Equals<TEntity, TInput>(
-            [NotNull] Expression<Func<TEntity, TInput>> propertyExpression,
-            TInput input)
+        public Expression<Func<TEntity, bool>>? Equals<TEntity, TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            TInput? input)
         {
             if (IgnoreDefaults && Equals(input, default(TInput)))
                 return null;
 
             if (typeof(TInput) == typeof(string))
-                return StringEquals(propertyExpression as Expression<Func<TEntity, string>>, input as string);
+            {
+                return StringEquals(
+                    propertyExpression as Expression<Func<TEntity, string>>
+                    ?? throw new ArgumentException("Cannot convert expression.", nameof(propertyExpression)),
+                    input as string);
+            }
 
             Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Equal(
@@ -104,9 +105,9 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> In<TEntity, TInput>(
-            [NotNull] Expression<Func<TEntity, TInput>> propertyExpression,
-            [CanBeNull] IEnumerable<TInput> input)
+        public Expression<Func<TEntity, bool>>? In<TEntity, TInput>(
+            Expression<Func<TEntity, TInput>> propertyExpression,
+            IEnumerable<TInput>? input)
         {
             _ = propertyExpression ??
                 throw new ArgumentNullException(nameof(propertyExpression), "Expression cannot be null.");
@@ -135,9 +136,9 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Any<TEntity, TInput>(
-            [NotNull] Expression<Func<TEntity, ICollection<TInput>>> collectionSelector,
-            [CanBeNull] Expression<Func<TInput, bool>> predicate)
+        public Expression<Func<TEntity, bool>>? Any<TEntity, TInput>(
+            Expression<Func<TEntity, IEnumerable<TInput>>> collectionSelector,
+            Expression<Func<TInput, bool>>? predicate)
         {
             _ = collectionSelector ??
                 throw new ArgumentNullException(nameof(collectionSelector), "Expression cannot be null");
@@ -159,9 +160,9 @@
         }
 
         /// <inheritdoc />
-        public Expression<Func<TEntity, bool>> Where<TEntity, TInput>(
-            [NotNull] Expression<Func<TEntity, TInput, bool>> predicate,
-            TInput input)
+        public Expression<Func<TEntity, bool>>? Where<TEntity, TInput>(
+            Expression<Func<TEntity, TInput, bool>> predicate,
+            TInput? input)
         {
             if (IgnoreDefaults && Equals(input, default(TInput)))
                 return null;
@@ -182,7 +183,12 @@
             }
 
             if (typeof(TInput) == typeof(string))
-                return StringWhere(predicate as Expression<Func<TEntity, string, bool>>, input as string);
+            {
+                return StringWhere(
+                    predicate as Expression<Func<TEntity, string, bool>>
+                    ?? throw new ArgumentException("Cannot convert expression.", nameof(predicate)),
+                    input as string);
+            }
 
             var replacement = new Dictionary<ParameterExpression, Expression>
             {
@@ -201,10 +207,13 @@
         }
 
         /// <inheritdoc cref="Where{TEntity,TInput}"/>
-        private Expression<Func<TEntity, bool>> StringWhere<TEntity>(
-            [NotNull] Expression<Func<TEntity, string, bool>> predicate,
-            string input)
+        private Expression<Func<TEntity, bool>>? StringWhere<TEntity>(
+            Expression<Func<TEntity, string, bool>> predicate,
+            string? input)
         {
+            _ = predicate ??
+                throw new ArgumentNullException(nameof(predicate), "Expression cannot be null");
+
             if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
                 return null;
 
@@ -231,7 +240,7 @@
                 : property;
         }
 
-        private string ToLower(string input)
+        private string? ToLower(string? input)
         {
             if (input == null)
                 return null;
