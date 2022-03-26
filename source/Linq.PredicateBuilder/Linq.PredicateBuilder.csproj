@@ -18,18 +18,20 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
     <PropertyGroup>
-        <Version>1.0.0-dev01</Version>
+        <Version>1.0.0-dev02</Version>
         <Authors>Max Eroshkin</Authors>
         <Product>Linq.PredicateBuilder</Product>
-        <Description>Data Access Layer Library</Description>
+        <Description>Linq.PredicateBuilder allows you to construct filtering expressions in run-time using fluent API and minimize boilerplate code such as null/empty checking and case ignoring.</Description>
         <PackageTags>Linq Where Filter Predicate Expression Fluent Builder</PackageTags>
         <PackageId>Linq.PredicateBuilder</PackageId>
         <PackageProjectUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Copyright>Copyright ©2020 Max Eroshkin</Copyright>
+        <Copyright>Copyright ©2022 Max Eroshkin</Copyright>
     </PropertyGroup>
 
 </Project>
