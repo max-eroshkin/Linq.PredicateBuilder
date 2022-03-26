@@ -31,6 +31,7 @@
         <PackageProjectUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright ©2022 Max Eroshkin</Copyright>
     </PropertyGroup>
 
