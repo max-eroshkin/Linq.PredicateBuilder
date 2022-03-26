@@ -39,7 +39,21 @@
         public void CombineAnd(bool x1, bool x2, bool x3)
         {
             bool result = x1 && x2 && x3;
-            Evaluate(_ => _.Where(x => x1).And.Where(x => x2).And.Where(x => x3)).Should().Be(result);
+            Evaluate(_ => _
+                .Where(x => x1).And
+                .Where(x => x2).And
+                .Where(x => x3)).Should().Be(result);
+        }
+
+        [Theory]
+        [ClassData(typeof(ThreeX))]
+        public void CombineAndNot(bool x1, bool x2, bool x3)
+        {
+            bool result = !x1 && x2 && !x3;
+            Evaluate(_ => _
+                .Not.Where(x => x1).And
+                .Where(x => x2).And
+                .Not.Where(x => x3)).Should().Be(result);
         }
 
         [Theory]
@@ -47,7 +61,21 @@
         public void CombineOr(bool x1, bool x2, bool x3)
         {
             bool result = x1 || x2 || x3;
-            Evaluate(_ => _.Where(x => x1).Or.Where(x => x2).Or.Where(x => x3)).Should().Be(result);
+            Evaluate(_ => _
+                .Where(x => x1).Or
+                .Where(x => x2).Or
+                .Where(x => x3)).Should().Be(result);
+        }
+        
+        [Theory]
+        [ClassData(typeof(ThreeX))]
+        public void CombineOrNot(bool x1, bool x2, bool x3)
+        {
+            bool result = !x1 || x2 || !x3;
+            Evaluate(_ => _
+                .Not.Where(x => x1).Or
+                .Where(x => x2).Or
+                .Not.Where(x => x3)).Should().Be(result);
         }
 
         [Theory]
@@ -99,6 +127,13 @@
                 .Brackets(b => b.Where(x => x1).Or.Where(x => x2))
                 .Or.Brackets(b => b.Where(x => x3).Or.Where(x => x4))).Should().Be(result);
         }
+        
+        [Fact]
+        public void EmptyBuilder()
+        {
+            Action a = () => Evaluate(_ => _.Brackets(null!));
+            a.Should().Throw<ArgumentException>().WithMessage("Builder cannot be null (Parameter 'builder')");
+        }
 
         private static bool X(int val, int mask)
         {
@@ -106,11 +141,13 @@
         }
 
         private bool Evaluate(
-            Func<ILogicOperation<long>, IQueryBuilderResult<long>> builder)
+            Func<IAndOrOperator<long>, IResult<long>> builder)
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
 
-            var expression = QueryableBuilderExtensions.CreateExpression(builder, new OperationStrategy());
+            var expression = 
+                QueryableBuilderExtensions.CreateExpression(builder, new OperationStrategy())
+                ?? throw new NullReferenceException("Expression cannot be null.");
             Debug.WriteLine(expression.ToString());
 
             return expression.Compile().Invoke(1);

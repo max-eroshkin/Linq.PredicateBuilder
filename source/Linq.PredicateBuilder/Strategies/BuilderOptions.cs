@@ -1,7 +1,5 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-
     /// <summary>
     /// Contains predicate builder options.
     /// </summary>
@@ -11,26 +9,26 @@
         /// <summary>
         /// No options
         /// </summary>
-        None = 0x0,
+        None = 0,
 
         /// <summary>
         /// IgnoreCase + IgnoreDefaultInputs + Trim
         /// </summary>
-        Default = 0x1 | 0x2 | 0x4,
+        Default = IgnoreCase | IgnoreDefaultInputs | Trim,
 
         /// <summary>
         /// Ignore case in string operations.
         /// </summary>
-        IgnoreCase = 0x1,
+        IgnoreCase = 1,
 
         /// <summary>
         /// Ignore default input values.
         /// </summary>
-        IgnoreDefaultInputs = 0x2,
+        IgnoreDefaultInputs = 1 << 1,
 
         /// <summary>
         /// Trim string input values.
         /// </summary>
-        Trim = 0x4
+        Trim = 1 << 2
     }
 }

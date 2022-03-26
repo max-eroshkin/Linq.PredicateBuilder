@@ -1,14 +1,13 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-    using System.Linq;
     using System.Linq.Expressions;
-    using JetBrains.Annotations;
 
     /// <summary>
-    /// Predicate extensions.
+    /// Contains predicate extension methods.
     /// </summary>
-    [PublicAPI]
+    /// <remarks>
+    /// Bases on <a href="https://github.com/lotosbin/BinbinPredicateBuilder">Binbin.Linq.PredicateBuilder</a>.
+    /// </remarks>
     public static class PredicateExtensions
     {
         /// <summary>
@@ -17,9 +16,9 @@
         /// <param name="first">The first expression.</param>
         /// <param name="second">The second expression.</param>
         /// <typeparam name="T">Element type.</typeparam>
-        public static Expression<Func<T, bool>> And<T>(
-            [CanBeNull] this Expression<Func<T, bool>> first,
-            [CanBeNull] Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>>? And<T>(
+            this Expression<Func<T, bool>>? first,
+            Expression<Func<T, bool>>? second)
         {
             if (first != null && second != null)
                 return first.Compose(second, Expression.AndAlso);
@@ -37,9 +36,9 @@
         /// <param name="first">The first expression.</param>
         /// <param name="second">The second expression.</param>
         /// <typeparam name="T">Element type.</typeparam>
-        public static Expression<Func<T, bool>> Or<T>(
-            [CanBeNull] this Expression<Func<T, bool>> first,
-            [CanBeNull] Expression<Func<T, bool>> second)
+        public static Expression<Func<T, bool>>? Or<T>(
+            this Expression<Func<T, bool>>? first,
+            Expression<Func<T, bool>>? second)
         {
             if (first != null && second != null)
                 return first.Compose(second, Expression.OrElse);
@@ -55,8 +54,8 @@
         /// </summary>
         /// <param name="expression">The predicate expression.</param>
         /// <typeparam name="T">Element type.</typeparam>
-        public static Expression<Func<T, bool>> Not<T>(
-            [CanBeNull] this Expression<Func<T, bool>> expression)
+        public static Expression<Func<T, bool>>? Not<T>(
+            this Expression<Func<T, bool>>? expression)
         {
             if (expression == null)
                 return null;
@@ -72,9 +71,9 @@
         /// <param name="merge">The merge function.</param>
         /// <typeparam name="T">Element type.</typeparam>
         private static Expression<T> Compose<T>(
-            [NotNull] this Expression<T> first,
-            [NotNull] Expression<T> second,
-            [NotNull] Func<Expression, Expression, Expression> merge)
+            this Expression<T> first,
+            Expression<T> second,
+            Func<Expression, Expression, Expression> merge)
         {
             var map = first.Parameters
                 .Select((f, i) => new { f, s = second.Parameters[i] })

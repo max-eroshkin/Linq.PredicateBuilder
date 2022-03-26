@@ -1,14 +1,10 @@
 ﻿namespace Linq.PredicateBuilder
 {
-    using System;
-    using System.Linq;
     using System.Linq.Expressions;
-    using JetBrains.Annotations;
 
     /// <summary>
     /// Extensions for IQueryable.
     /// </summary>
-    [PublicAPI]
     public static class QueryableBuilderExtensions
     {
         /// <summary>
@@ -18,8 +14,8 @@
         /// <param name="source">An entity sequence.</param>
         /// <param name="builder">A predicate builder.</param>
         public static IQueryable<T> Build<T>(
-            [NotNull] this IQueryable<T> source,
-            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder)
+            this IQueryable<T> source,
+            Func<IAndOrOperator<T>, IResult<T>> builder)
         {
             return source.Build(
                 builder,
@@ -34,9 +30,9 @@
         /// <param name="builder">A predicate builder.</param>
         /// <param name="strategy">A filtering strategy.</param>
         public static IQueryable<T> Build<T>(
-            [NotNull] this IQueryable<T> source,
-            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
-            [NotNull] IOperationStrategy strategy)
+            this IQueryable<T> source,
+            Func<IAndOrOperator<T>, IResult<T>> builder,
+            IOperationStrategy strategy)
         {
             var expression = CreateExpression(builder, strategy);
 
@@ -53,8 +49,8 @@
         /// <param name="builder">A predicate builder.</param>
         /// <param name="options">Builder options</param>
         public static IQueryable<T> Build<T>(
-            [NotNull] this IQueryable<T> source,
-            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
+            this IQueryable<T> source,
+            Func<IAndOrOperator<T>, IResult<T>> builder,
             BuilderOptions options)
         {
             return source.Build(
@@ -68,14 +64,14 @@
         /// <typeparam name="T">Entity type.</typeparam>
         /// <param name="builder">A predicate builder.</param>
         /// <param name="strategy">A filtering strategy.</param>
-        public static Expression<Func<T, bool>> CreateExpression<T>(
-            [NotNull] Func<ILogicOperation<T>, IQueryBuilderResult<T>> builder,
-            [NotNull] IOperationStrategy strategy)
+        public static Expression<Func<T, bool>>? CreateExpression<T>(
+            Func<IAndOrOperator<T>, IResult<T>> builder,
+            IOperationStrategy? strategy)
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
             _ = strategy ?? throw new ArgumentException("Strategy cannot be null", nameof(strategy));
 
-            var init = new QueryBuilder<T>(strategy);
+            var init = new BuilderInit<T>(strategy);
             var expression = builder(init).GetExpression();
 
             return expression;

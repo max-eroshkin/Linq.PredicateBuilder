@@ -2,38 +2,36 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>9</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>10</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup>
         <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-    
     <ItemGroup>
-      <Compile Include="..\Annotations.cs">
-        <Link>Annotations.cs</Link>
-      </Compile>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
-
     <PropertyGroup>
-        <Version>0.2.1</Version>
+        <Version>1.0.0</Version>
         <Authors>Max Eroshkin</Authors>
         <Product>Linq.PredicateBuilder</Product>
-        <Description>Data Access Layer Library</Description>
+        <Description>Linq.PredicateBuilder allows you to construct filtering expressions in run-time using fluent API and minimize boilerplate code such as null/empty checking and case ignoring.</Description>
         <PackageTags>Linq Where Filter Predicate Expression Fluent Builder</PackageTags>
         <PackageId>Linq.PredicateBuilder</PackageId>
         <PackageProjectUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Copyright>Copyright ©2020 Max Eroshkin</Copyright>
+        <Copyright>Copyright ©2022 Max Eroshkin</Copyright>
     </PropertyGroup>
 
 </Project>
