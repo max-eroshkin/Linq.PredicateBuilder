@@ -13,7 +13,7 @@ Linq.PredicateBuilder is very useful when you have to fetch data from database u
          
  Using this library allow you easily create queries using fluent API.
 
-##Sample
+## Sample
       
 ```c#       
 var filter = new Filter
@@ -42,7 +42,7 @@ This query is equal to the next code:
 var lastName = filter.LastName.ToLower();
 var query = Persons.Where(x => x.LastName.ToLower().Equals(lastName) && x.Gender.Equals(filter.Gender));
 ```
-##Expression Combining
+## Expression Combining
 You can combine conditions using logical operators _AND_ and _OR_.
 
 ```c#
@@ -55,7 +55,7 @@ var orQuery = Persons.Build(_ => _
     .Contains(x => x.FirstName, filter.FirstName)
     .Or.Contains(x => x.LastName, filter.LastName));
   ```      
-###Precedence
+### Precedence
 To change the precedence of operations you can use _Brackets_ method with a nested builder
 ```c#
 var query3 = Persons.Build(_ => _
