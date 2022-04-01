@@ -9,14 +9,14 @@ public class Example
     {
         Persons = new Person[]
         {
-            new() { Id = 1, FirstName = "John", LastName = "Smith", BirthDate = new DateTime(1977, 5, 13), Gender = Gender.Male},
-            new() { Id = 2, FirstName = "Barbara", LastName = "Johnson", BirthDate = new DateTime(1985, 1, 1), Gender = Gender.Male },
-            new() { Id = 3, FirstName = "Michael", LastName = "Brown", BirthDate = new DateTime(1997, 11, 20), Gender = Gender.Male },
-            new() { Id = 4, FirstName = "Charles", LastName = "Walker", BirthDate = new DateTime(1981, 8, 18), Gender = Gender.Male },
-            new() { Id = 5, FirstName = "Maria", LastName = "Carter", BirthDate = new DateTime(2000, 12, 7), Gender = Gender.Male },
-            new() { Id = 6, FirstName = "Catherine", LastName = "Walker", BirthDate = new DateTime(1987, 5, 3), Gender = Gender.Male },
-            new() { Id = 7, FirstName = "Diane", LastName = "Brown", BirthDate = new DateTime(2001, 2, 3), Gender = Gender.Male },
-            new() { Id = 8, FirstName = "Catherine", LastName = "Campbell", BirthDate = new DateTime(2003, 4, 3), Gender = Gender.Male },
+            new(1, "John", "Smith", new DateTime(1977, 5, 13), Gender.Male),
+            new(2, "Barbara", "Johnson", new DateTime(1985, 1, 1), Gender.Male),
+            new(3, "Michael", "Brown", new DateTime(1997, 11, 20), Gender.Male),
+            new(4, "Charles", "Walker", new DateTime(1981, 8, 18), Gender.Male),
+            new(5, "Maria", "Carter", new DateTime(2000, 12, 7), Gender.Male),
+            new(6, "Catherine", "Walker", new DateTime(1987, 5, 3), Gender.Male),
+            new(7, "Diane", "Brown", new DateTime(2001, 2, 3), Gender.Male),
+            new(8, "Catherine", "Campbell", new DateTime(2003, 4, 3), Gender.Male),
         }.AsQueryable();
     }
 

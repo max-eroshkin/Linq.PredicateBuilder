@@ -37,14 +37,14 @@
             
             Persons = new Person[]
             {
-                new() { Id = 1, FirstName = "John", LastName = "Smith", BirthDate = new DateTime(1977, 5, 13), Gender = Gender.Male },
-                new() { Id = 2, FirstName = "Barbara", LastName = "Johnson", BirthDate = new DateTime(1985, 1, 1), Gender = Gender.Female },
-                new() { Id = 3, FirstName = "Michael", LastName = "Brown", BirthDate = new DateTime(1997, 11, 20), Gender = Gender.Male },
-                new() { Id = 4, FirstName = "Charles", LastName = "Walker", BirthDate = new DateTime(1981, 8, 18), Gender = Gender.Male },
-                new() { Id = 5, FirstName = "Maria", LastName = "Carter", BirthDate = new DateTime(2000, 12, 7), Gender = Gender.Female },
-                new() { Id = 6, FirstName = "Catherine", LastName = "Walker", BirthDate = new DateTime(1987, 5, 3), Gender = Gender.Female },
-                new() { Id = 7, FirstName = "Diane", LastName = "Brown", BirthDate = new DateTime(2001, 2, 3), Gender = Gender.Female },
-                new() { Id = 8, FirstName = "Catherine", LastName = "Campbell", BirthDate = new DateTime(2003, 4, 3), Gender = Gender.Female },
+                new(1, "John", "Smith", new DateOnly(1977, 5, 13), Gender.Male),
+                new(2, "Barbara", "Johnson", new DateOnly(1985, 1, 1), Gender.Male),
+                new(3, "Michael", "Brown", new DateOnly(1997, 11, 20), Gender.Male),
+                new(4, "Charles", "Walker", new DateOnly(1981, 8, 18), Gender.Male),
+                new(5, "Maria", "Carter", new DateOnly(2000, 12, 7), Gender.Male),
+                new(6, "Catherine", "Walker", new DateOnly(1987, 5, 3), Gender.Male),
+                new(7, "Diane", "Brown", new DateOnly(2001, 2, 3), Gender.Male),
+                new(8, "Catherine", "Campbell", new DateOnly(2003, 4, 3), Gender.Male),
             }.AsQueryable();
         }
     }

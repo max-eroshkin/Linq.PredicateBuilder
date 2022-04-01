@@ -2,15 +2,7 @@
 
 using System;
 
-public class Person
-{
-    public int Id { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public DateTime? BirthDate { get; set; }
-    public Gender Gender { get; set; }
-    public string Comment { get; set; } = string.Empty;
-}
+public record Person(int Id, string FirstName, string LastName, DateOnly? DateOfBirth, Gender Gender, string Comment = "");
 
 public enum Gender
 {

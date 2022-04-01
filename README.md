@@ -81,9 +81,28 @@ var query3 = Persons.Build(_ => _
     .Contains(x => x.Comment, filter.Comment)
     .And.Brackets(b => b.Equals(x => x.FirstName, filter.FirstName).Or.Equals(x => x.LastName, filter.LastName)));
 ```
-
+##Ignoring predicate segments
+You can control whether ignore segment or not by using `Conditional()` method before the segment. If parameter of 
+`Conditional()` evaluates to `false` the segment will be ignore.
 ```c#
 var query = Persons.Build(_ => _
     .Equals(x => x.LastName, filter.LastName)
-    .And.Conditional(boolean_expression).Equals(x => x.Gender, filter.Gender));
+    .And.Conditional(boolean_expression).Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
  ```    
+Most of predicate methods have two mandatory parameters - _property selector_, _filter parameter_ and optional _builder options_.
+The default _builder options_ is to `IgnoreCase | IgnoreDefaultInputs | Trim`it means that 
+- if parameter type is string, the starting and trailing whitespaces will be removed from its value 
+- string operation will be performed case insensitive
+- if value is `default`, `string.Empty` or empty collection than current segment will be ignore.
+Here are next methods ???
+- ```.Equals(selector_expression, input_value)```
+- ```.Contains(selector_expression, input_value)```
+- ```.In(selector_expression, collection_input_value)```
+- ```.Where(predicate)```
+- ```.Where(predicate, input_value)```
+
+Also you can use universal _conditional_ `Where()` method where you pass input_value? into the expression as a parameter,
+and previously described strategy of :
+```c#
+.Where((x, parameter) => x.DateOfBirth >= parameter, new DateOny(1990, 1, 1))
+```
