@@ -22,7 +22,7 @@ public class Person
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public DateTime? BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public Gender Gender { get; set; }
     public string Comment { get; set; }
 }
@@ -36,7 +36,7 @@ and Filter class instance containing search parameters
 ```c#
 var filter = new Filter
 {
-    FirstName = null!,
+    FirstName = null,
     LastName = "Brown",
     Gender = Gender.Male,
     Comment = string.Empty,
@@ -63,15 +63,21 @@ var query = Persons.Where(x => x.LastName.ToLower().Equals(lastName) && x.Gender
 You can combine filtering conditions using logical operators _AND_ and _OR_.
 
 ```c#
-var andQuery = Persons.Build(_ => _
+var query = Persons.Build(_ => _
     .Equals(x => x.LastName, filter.LastName)
     .And.Equals(x => x.Gender, filter.Gender));
  ```    
 ```c#
-var orQuery = Persons.Build(_ => _
+var query = Persons.Build(_ => _
     .Contains(x => x.FirstName, filter.FirstName)
     .Or.Contains(x => x.LastName, filter.LastName));
-  ```      
+```
+Also you can use logical negation operator _NOT_.
+```c#
+var query = Persons.Build(_ => _
+    .Not.Equals(x => x.LastName, filter.LastName)
+    .And.Not.Contains(x => x.Comment, filter.Comment));
+```
 ### Precedence
 You can't use _AND_ and _OR_ operators side by side because of there is no easy way to provide precedence of these logical operators.
 
@@ -81,20 +87,24 @@ var query3 = Persons.Build(_ => _
     .Contains(x => x.Comment, filter.Comment)
     .And.Brackets(b => b.Equals(x => x.FirstName, filter.FirstName).Or.Equals(x => x.LastName, filter.LastName)));
 ```
-##Ignoring predicate segments
+## Ignoring predicate segments
+As you can see in the samples above, builder chain is divided into atomic logical segments connected with operators.
+Let's see how you can control query building depending on search filter parameter values.
+### Checking filter values
+Most of predicate methods have two mandatory parameters - _property selector_, _filter parameter_ and optional _builder options_.
+The default _builder options_ is to `IgnoreCase | IgnoreDefaultInputs | Trim`it means that
+- if parameter type is string, the starting and trailing whitespaces will be removed from its value
+- string operation will be performed case insensitive
+- if value is `default`, `string.Empty` or empty collection than current segment will be ignore.
+### Conditional()
 You can control whether ignore segment or not by using `Conditional()` method before the segment. If parameter of 
-`Conditional()` evaluates to `false` the segment will be ignore.
+`Conditional()` evaluates to `false` the segment will be ignored.
 ```c#
 var query = Persons.Build(_ => _
     .Equals(x => x.LastName, filter.LastName)
     .And.Conditional(boolean_expression).Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
  ```    
-Most of predicate methods have two mandatory parameters - _property selector_, _filter parameter_ and optional _builder options_.
-The default _builder options_ is to `IgnoreCase | IgnoreDefaultInputs | Trim`it means that 
-- if parameter type is string, the starting and trailing whitespaces will be removed from its value 
-- string operation will be performed case insensitive
-- if value is `default`, `string.Empty` or empty collection than current segment will be ignore.
-Here are next methods ???
+## Available methods
 - ```.Equals(selector_expression, input_value)```
 - ```.Contains(selector_expression, input_value)```
 - ```.In(selector_expression, collection_input_value)```
@@ -102,7 +112,7 @@ Here are next methods ???
 - ```.Where(predicate, input_value)```
 
 Also you can use universal _conditional_ `Where()` method where you pass input_value? into the expression as a parameter,
-and previously described strategy of :
+where the parameter is being checked against conditions to ignore the segment if needed:
 ```c#
-.Where((x, parameter) => x.DateOfBirth >= parameter, new DateOny(1990, 1, 1))
+.Where((x, parameter) => x.DateOfBirth >= parameter, filter.DateOfBirth)
 ```
