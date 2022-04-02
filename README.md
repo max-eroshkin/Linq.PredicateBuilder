@@ -1,8 +1,8 @@
 # Linq.PredicateBuilder
 
 [![CI](https://github.com/max-eroshkin/Linq.PredicateBuilder/actions/workflows/CI.yml/badge.svg)](https://github.com/max-eroshkin/Linq.PredicateBuilder/actions)
-[![Release](https://img.shields.io/nuget/v/Linq.PredicateBuilder?logo=nuget&label=release&color=blue)](https://www.nuget.org/packages/Linq.PredicateBuilder)
-[![Latest](https://img.shields.io/nuget/vpre/Linq.PredicateBuilder?logo=nuget&label=latest&color=yellow)](https://www.nuget.org/packages/Linq.PredicateBuilder/absoluteLatest)
+[![Release](https://img.shields.io/nuget/v/Linq.PredicateBuilder?logo=nuget&label=nuget%20release&color=blue)](https://www.nuget.org/packages/Linq.PredicateBuilder)
+[![Latest](https://img.shields.io/nuget/vpre/Linq.PredicateBuilder?logo=nuget&label=nuget%20latest&color=yellow)](https://www.nuget.org/packages/Linq.PredicateBuilder/absoluteLatest)
 
 This library allows you to construct filtering expressions in run-time using fluent API
 and minimize boilerplate code such as null/empty checking and case ignoring.
@@ -15,7 +15,7 @@ Linq.PredicateBuilder is very useful when you have to fetch data from database u
 
 ## Sample
  
- For this sample we will use `Person` class
+ For this sample we will use `Person` entity class
 ```c#
 public class Person
 {
@@ -25,6 +25,18 @@ public class Person
     public DateOnly? BirthDate { get; set; }
     public Gender Gender { get; set; }
     public string Comment { get; set; }
+    public IEnumerable<Person> Relatives{ get; set; }
+}
+
+public class Filter
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Comment { get; set; }
+    public DateTime? Birthdate { get; set; }
+    public Gender? Gender { get; set; }
+    public List<int> Ids { get; set; }
+    public bool? HasRelative { get; set; }
 }
 ```
 source of Persons
@@ -40,7 +52,8 @@ var filter = new Filter
     LastName = "Brown",
     Gender = Gender.Male,
     Comment = string.Empty,
-    Ids = new List<int>()
+    Ids = new List<int>(),
+    HasRelatives = null
 };
 ```
 Here we build a query from several predicate segments combined together
@@ -50,7 +63,9 @@ var query = Persons.Build(_ => _
     .And.Equals(x => x.LastName, filter.LastName)
     .And.Equals(x => x.Gender, filter.Gender)
     .And.Contains(x => x.Comment, filter.Comment) // filter.Comment is empty -> this segment will be ignored
-    .And.In(x => x.Id, filter.Ids));              // filter.Ids is empty -> this segment will be ignored
+    .And.In(x => x.Id, filter.Ids)                // filter.Ids is empty -> this segment will be ignored
+    .And.Conditional(filter.HasRelatives == true).Where(x => x.Relatives.Any())     //
+    .And.Conditional(filter.HasRelatives == false).Where(x => !x.Relatives.Any())); //
 ```
 Some of these segments will be ignored because of corresponding search parameters intended to not be use in the query.
 This query is equal to the next code:
@@ -90,20 +105,34 @@ var query3 = Persons.Build(_ => _
 ## Ignoring predicate segments
 As you can see in the samples above, builder chain is divided into atomic logical segments connected with operators.
 Let's see how you can control query building depending on search filter parameter values.
+
 ### Checking filter values
-Most of predicate methods have two mandatory parameters - _property selector_, _filter parameter_ and optional _builder options_.
+Most of predicate methods have two mandatory parameters: _property selector_, _filter parameter_ and optional _builder options_.
 The default _builder options_ is to `IgnoreCase | IgnoreDefaultInputs | Trim`it means that
 - if parameter type is string, the starting and trailing whitespaces will be removed from its value
 - string operation will be performed case insensitive
-- if value is `default`, `string.Empty` or empty collection than current segment will be ignore.
+- if value is `default`, `string.Empty` or empty collection than current segment will be **ignored**.
+
+Builder parameters can be changed per segment or for whole builder.
+
 ### Conditional()
 You can control whether ignore segment or not by using `Conditional()` method before the segment. If parameter of 
-`Conditional()` evaluates to `false` the segment will be ignored.
+`Conditional()` evaluates to `false` the segment will be **ignored**.
 ```c#
 var query = Persons.Build(_ => _
     .Equals(x => x.LastName, filter.LastName)
     .And.Conditional(boolean_expression).Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
  ```    
+
+## Nested collections
+To build predicates for nested collection there is `Any()` method that has collection selector and nested builder
+for the collection. Following code shows the use case
+```c#
+var query = Persons.Build(_ => _
+    .Equals(x => x.LastName, filter.LastName)
+    .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
+```
+
 ## Available methods
 - ```.Equals(selector_expression, input_value)```
 - ```.Contains(selector_expression, input_value)```

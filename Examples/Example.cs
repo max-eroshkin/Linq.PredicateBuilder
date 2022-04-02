@@ -1,4 +1,4 @@
-﻿namespace Linq.PredicateBuilder.Examples;
+﻿/*namespace Linq.PredicateBuilder.Examples;
 
 using Models;
 using Linq.PredicateBuilder;
@@ -74,4 +74,4 @@ public class Filter
     public DateTime? Birthdate { get; set; }
     public Gender? Gender { get; set; }
     public List<int> Ids { get; set; }
-}
+}*/

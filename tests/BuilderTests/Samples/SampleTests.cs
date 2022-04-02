@@ -37,8 +37,9 @@ public class SampleTests
             .And.Equals(x => x.LastName, filter.LastName)
             .And.Equals(x => x.Gender, filter.Gender)
             .And.Contains(x => x.Comment, filter.Comment) // Comment is empty -> Ignored
-            .And.In(x => x.Id, filter.Ids)); // Ids is empty -> Ignored
-
+            .And.In(x => x.Id, filter.Ids)
+            .And.Conditional(filter.HasRelatives == true).Where(x => x.Relatives.Any()) // Ignored
+            .And.Conditional(filter.HasRelatives == false).Where(x => !x.Relatives.Any())); // Ignored
         var lastName = filter.LastName.ToLower();
         var query2 = Persons.Where(x =>
             x.LastName.ToLower().Equals(lastName) && x.Gender.Equals(filter.Gender)).ToList();
@@ -63,7 +64,12 @@ public class SampleTests
         var boolean_expression = false;
         var query4 = Persons.Build(_ => _
             .Equals(x => x.LastName, filter.LastName)
-            .And.Conditional(boolean_expression).Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
+            .And.Conditional(boolean_expression)
+            .Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
+
+var query5 = Persons.Build(_ => _
+    .Equals(x => x.LastName, filter.LastName)
+    .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
     }
 
     /*void HowIgnoringWorks()
@@ -96,4 +102,6 @@ public class Filter
     public Gender? Gender { get; set; }
 
     public List<int> Ids { get; set; }
+
+    public bool? HasRelatives { get; set; }
 }
