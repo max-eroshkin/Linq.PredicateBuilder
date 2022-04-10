@@ -1,28 +1,25 @@
 # Linq.PredicateBuilder
 
 [![CI](https://github.com/max-eroshkin/Linq.PredicateBuilder/actions/workflows/CI.yml/badge.svg)](https://github.com/max-eroshkin/Linq.PredicateBuilder/actions)
-[![Release](https://img.shields.io/nuget/v/Linq.PredicateBuilder?logo=nuget&label=nuget%20release&color=blue)](https://www.nuget.org/packages/Linq.PredicateBuilder)
-[![Latest](https://img.shields.io/nuget/vpre/Linq.PredicateBuilder?logo=nuget&label=nuget%20latest&color=yellow)](https://www.nuget.org/packages/Linq.PredicateBuilder/absoluteLatest)
+[![Release](https://img.shields.io/nuget/v/Linq.PredicateBuilder?logo=nuget&label=nuget&color=blue)](https://www.nuget.org/packages/Linq.PredicateBuilder)
 
-This library allows you to construct filtering expressions in run-time using fluent API
+This library allows you to construct filtering expressions at run-time on the fly using fluent API
 and minimize boilerplate code such as null/empty checking and case ignoring.
 
-Linq.PredicateBuilder is very useful when you have to fetch data from database using query based on search
- filter parameters. In such cases you usually need to create a lot of boilerplate code to check parameters against
- nulls, empty strings and trim starting/trailing whitespaces before including filtering conditions in query.
-         
- Using this library allow you easily create queries using fluent API.
+Linq.PredicateBuilder can be useful when you have to fetch data from database using query based on search
+filter parameters. In such cases you usually need to create a lot of boilerplate code to check parameters against
+nulls, empty strings and trim starting/trailing whitespaces before including filtering conditions in query.
 
-## Sample
- 
- For this sample we will use `Person` entity class
+## Samples
+
+For this sample we will use `Person` entity class and `Filter` class containing search parameters
 ```c#
 public class Person
 {
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public DateOnly? BirthDate { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public string Comment { get; set; }
     public IEnumerable<Person> Relatives{ get; set; }
@@ -33,18 +30,18 @@ public class Filter
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Comment { get; set; }
-    public DateTime? Birthdate { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     public Gender? Gender { get; set; }
     public List<int> Ids { get; set; }
-    public bool? HasRelative { get; set; }
+    public bool? HasRelatives { get; set; }
 }
 ```
-source of Persons
+We have a source of Persons
 ```c#       
-IQueryable<Persons> Persons { get; set; }
+IQueryable<Persons> Persons { get; }
 ```
 
-and Filter class instance containing search parameters 
+and `Filter` class instance with parameters values
 ```c#
 var filter = new Filter
 {
@@ -56,7 +53,7 @@ var filter = new Filter
     HasRelatives = null
 };
 ```
-Here we build a query from several predicate segments combined together
+So we can build a query from several predicate segments combined together.
 ```c#
 var query = Persons.Build(_ => _
     .Equals(x => x.FirstName, filter.FirstName)   // filter.FirstName is null -> this segment will be ignored
@@ -64,18 +61,18 @@ var query = Persons.Build(_ => _
     .And.Equals(x => x.Gender, filter.Gender)
     .And.Contains(x => x.Comment, filter.Comment) // filter.Comment is empty -> this segment will be ignored
     .And.In(x => x.Id, filter.Ids)                // filter.Ids is empty -> this segment will be ignored
-    .And.Conditional(filter.HasRelatives == true).Where(x => x.Relatives.Any())     //
-    .And.Conditional(filter.HasRelatives == false).Where(x => !x.Relatives.Any())); //
+    .And.Conditional(filter.HasRelatives == true).Where(x => x.Relatives.Any())     // filter.HasRelatives is null -> this segment will be ignored
+    .And.Conditional(filter.HasRelatives == false).Where(x => !x.Relatives.Any())); // filter.HasRelatives is null -> this segment will be ignored
 ```
-Some of these segments will be ignored because of corresponding search parameters intended to not be use in the query.
-This query is equal to the next code:
+Some of these segments will be ignored because corresponding search parameters are not intended (should??) to be used in the query.
+This query is equal to the following code:
 
 ```c#
 var lastName = filter.LastName.ToLower();
 var query = Persons.Where(x => x.LastName.ToLower().Equals(lastName) && x.Gender.Equals(filter.Gender));
 ```
 ## Expression Combining
-You can combine filtering conditions using logical operators _AND_ and _OR_.
+You can combine predicates using logical operators _AND_ and _OR_.
 
 ```c#
 var query = Persons.Build(_ => _
@@ -94,38 +91,38 @@ var query = Persons.Build(_ => _
     .And.Not.Contains(x => x.Comment, filter.Comment));
 ```
 ### Precedence
-You can't use _AND_ and _OR_ operators side by side because of there is no easy way to provide precedence of these logical operators.
+You can't use _AND_ and _OR_ operators side by side because the precedence of that operators are not provided.
 
-To mix _ANDs_ and _ORs_ or change the precedence of operators you can use _Brackets_ method with a nested builder
+To mix _ANDs_ and _ORs_ or change the precedence of operators you can use `Brackets()` method with a nested builder.
 ```c#
-var query3 = Persons.Build(_ => _
+var query = Persons.Build(_ => _
     .Contains(x => x.Comment, filter.Comment)
     .And.Brackets(b => b.Equals(x => x.FirstName, filter.FirstName).Or.Equals(x => x.LastName, filter.LastName)));
 ```
-## Ignoring predicate segments
+## Ignoring Builder Segments
 As you can see in the samples above, builder chain is divided into atomic logical segments connected with operators.
 Let's see how you can control query building depending on search filter parameter values.
 
-### Checking filter values
-Most of predicate methods have two mandatory parameters: _property selector_, _filter parameter_ and optional _builder options_.
+### Checking Filter Values
+Most of predicate methods have two mandatory parameters: _property selector_, _filter parameter_ and one optional _builder options_.
 The default _builder options_ is to `IgnoreCase | IgnoreDefaultInputs | Trim`it means that
 - if parameter type is string, the starting and trailing whitespaces will be removed from its value
 - string operation will be performed case insensitive
-- if value is `default`, `string.Empty` or empty collection than current segment will be **ignored**.
+- if value equals `default`, `string.Empty` or empty collection than current segment will be **ignored** (skipped).
 
 Builder parameters can be changed per segment or for whole builder.
 
 ### Conditional()
-You can control whether ignore segment or not by using `Conditional()` method before the segment. If parameter of 
-`Conditional()` evaluates to `false` the segment will be **ignored**.
+You can control whether ignore segment or not using `Conditional()` method before the segment. If parameter of
+`Conditional()` evaluates to `false` the segment will be **ignored** (skipped).
 ```c#
 var query = Persons.Build(_ => _
     .Equals(x => x.LastName, filter.LastName)
     .And.Conditional(boolean_expression).Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
  ```    
 
-## Nested collections
-To build predicates for nested collection there is `Any()` method that has collection selector and nested builder
+## Nested Collections
+To build predicates for nested collection you have `Any()` method that has collection selector and nested builder
 for the collection. Following code shows the use case
 ```c#
 var query = Persons.Build(_ => _
@@ -133,15 +130,29 @@ var query = Persons.Build(_ => _
     .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
 ```
 
-## Available methods
-- ```.Equals(selector_expression, input_value)```
-- ```.Contains(selector_expression, input_value)```
-- ```.In(selector_expression, collection_input_value)```
-- ```.Where(predicate)```
-- ```.Where(predicate, input_value)```
+## Builder Predicate Methods
+| Method                                                | Description                                         |
+|-------------------------------------------------------|-----------------------------------------------------|
+| `Equals(selector_expression, input_value)`            | builds a predicate based on `Equals()`              |
+| `Contains(selector_expression, input_value)`          | builds a predicate based on `String.Contains()`     |
+| `In(selector_expression, collection_input_value)`     | builds a predicate based on `Enumerable.Contains()` |
+| `Any(collection_selector_expression, nested_builder)` | builds a predicate for nested collections           |
+| `Where(predicate)`                                    | uses the predicate from its parameter               |
+| `Where(predicate, input_value)`                       | _conditional_ `Where()` method                      |
 
-Also you can use universal _conditional_ `Where()` method where you pass input_value? into the expression as a parameter,
-where the parameter is being checked against conditions to ignore the segment if needed:
+In the _conditional_ `Where()` method you pass `input_value` into the predicate as a parameter,
+also the parameter is being checked against conditions to ignore the segment if needed:
 ```c#
 .Where((x, parameter) => x.DateOfBirth >= parameter, filter.DateOfBirth)
+```
+
+## Building Predicates
+In the samples above we created queries using `Build()` extension method. To build a predicate expression use
+static `QueryableBuilderExtensions.BuildPredicate()`.
+```c#
+var predicate = QueryableBuilderExtensions.BuildPredicate<Person>(_ => _
+    .Equals(x => x.LastName, filter.LastName)
+    .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
+
+var query = Persons.Where(predicate ?? (x => true));
 ```

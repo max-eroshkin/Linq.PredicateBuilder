@@ -141,4 +141,24 @@ public class SampleTests
             x.LastName.ToLower().Equals(lastName) ||
             x.Relatives.Any(r => r.LastName.ToLower().Equals(lastName))));
     }
+    
+    [Fact]
+    public void Predicate()
+    {
+        var filter = new Filter
+        {
+            LastName = "walker",
+        };
+        var predicate = QueryableBuilderExtensions.BuildPredicate<Person>(_ => _
+            .Equals(x => x.LastName, filter.LastName)
+            .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
+        
+        var query = Persons.Where(predicate ?? (x => true));
+
+        var lastName = filter.LastName.Trim().ToLower();
+
+        query.Should().BeEquivalentTo(Persons.Where(x =>
+            x.LastName.ToLower().Equals(lastName) ||
+            x.Relatives.Any(r => r.LastName.ToLower().Equals(lastName))));
+    }
 }
