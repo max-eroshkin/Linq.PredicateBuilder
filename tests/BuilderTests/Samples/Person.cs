@@ -1,7 +1,6 @@
-﻿namespace BuilderTests.Data;
+﻿namespace BuilderTests.Samples;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 ////public record Person(int Id, string FirstName, string LastName, DateOnly? DateOfBirth, Gender Gender, string Comment = "", IEnumerable<Person> Relatives = null!);

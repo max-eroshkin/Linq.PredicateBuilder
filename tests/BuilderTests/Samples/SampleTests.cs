@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Data;
 using FluentAssertions;
@@ -16,12 +15,6 @@ public class SampleTests
     [Fact]
     public void Ignoring()
     {
-        /*Linq.PredicateBuilder is very useful when you have to fetch data from database using query based on search
-         filter parameters. In such cases you usually need to create a lot of boilerplate code to check parameters against
-         nulls, empty strings, trim starting and tailing whitespaces before including filtering conditions to query.
-         
-         Using this library allow you easily create queries using fluent API.*/
-
         var filter = new Filter
         {
             FirstName = null!,
@@ -31,23 +24,30 @@ public class SampleTests
             Ids = new List<int>()
         };
 
-        // Sample of such query
         var query = Persons.Build(_ => _
             .Equals(x => x.FirstName, filter.FirstName) // FirstName is null -> Ignored
             .And.Equals(x => x.LastName, filter.LastName)
             .And.Equals(x => x.Gender, filter.Gender)
             .And.Contains(x => x.Comment, filter.Comment) // Comment is empty -> Ignored
-            .And.In(x => x.Id, filter.Ids)
+            .And.In(x => x.Id, filter.Ids) // Ids is empty -> Ignored
             .And.Conditional(filter.HasRelatives == true).Where(x => x.Relatives.Any()) // Ignored
             .And.Conditional(filter.HasRelatives == false).Where(x => !x.Relatives.Any())); // Ignored
-        var lastName = filter.LastName.ToLower();
-        var query2 = Persons.Where(x =>
-            x.LastName.ToLower().Equals(lastName) && x.Gender.Equals(filter.Gender)).ToList();
 
-        // query and query2 are equal
-        query.Should().BeEquivalentTo(query2);
+        var lastName = filter.LastName.Trim().ToLower();
+        query.Should().BeEquivalentTo(
+            Persons.Where(x => x.LastName.ToLower().Equals(lastName) && x.Gender.Equals(filter.Gender)));
+    }
 
-        /*You can combine conditions using logical operators AND and OR*/
+    [Fact]
+    public void Combining()
+    {
+        var filter = new Filter
+        {
+            FirstName = "Charles",
+            LastName = "Brown",
+            Gender = Gender.Male,
+        };
+
         var andQuery = Persons.Build(_ => _
             .Equals(x => x.LastName, filter.LastName)
             .And.Equals(x => x.Gender, filter.Gender));
@@ -56,52 +56,89 @@ public class SampleTests
             .Contains(x => x.FirstName, filter.FirstName)
             .Or.Contains(x => x.LastName, filter.LastName));
 
-        /*To change the precedence of operations you can use Brackets method with a nested builder*/
-        var query3 = Persons.Build(_ => _
+        var lastName = filter.LastName.Trim().ToLower();
+        var firstName = filter.FirstName.Trim().ToLower();
+
+        andQuery.Should().BeEquivalentTo(
+            Persons.Where(x =>
+                x.LastName.ToLower().Equals(lastName) && x.Gender == filter.Gender));
+
+        orQuery.Should().BeEquivalentTo(
+            Persons.Where(x =>
+                x.FirstName.ToLower().Equals(firstName) || x.LastName.ToLower().Equals(lastName)));
+    }
+
+    [Fact]
+    public void Precedence()
+    {
+        var filter = new Filter
+        {
+            FirstName = "Charles ",
+            LastName = "Carter",
+            Comment = "this",
+        };
+
+        var query = Persons.Build(_ => _
             .Contains(x => x.Comment, filter.Comment)
             .And.Brackets(b =>
                 b.Equals(x => x.FirstName, filter.FirstName).Or.Equals(x => x.LastName, filter.LastName)));
-        var boolean_expression = false;
-        var query4 = Persons.Build(_ => _
-            .Equals(x => x.LastName, filter.LastName)
-            .And.Conditional(boolean_expression)
-            .Where(x => x.DateOfBirth < new DateOnly(1990, 1, 1))); // this segment is controlled by .Conditional(boolean_expression)
 
-var query5 = Persons.Build(_ => _
-    .Equals(x => x.LastName, filter.LastName)
-    .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
+        var lastName = filter.LastName.Trim().ToLower();
+        var firstName = filter.FirstName.Trim().ToLower();
+        var comment = filter.Comment.Trim().ToLower();
+
+        query.Should().BeEquivalentTo(
+            Persons.Where(x =>
+                x.Comment.ToLower().Contains(comment) &&
+                (x.FirstName.ToLower().Equals(firstName) || x.LastName.ToLower().Equals(lastName))));
     }
 
-    /*void HowIgnoringWorks()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Conditional(bool boolean)
     {
-        var filter = new
+        var filter = new Filter
         {
-            LastName = "Brown",
-            Gender = Gender.Male
+            LastName = "brown",
+            DateOfBirth = new DateOnly(1999, 1, 1)
         };
-        
-        var result = Persons.Build(_ => _
-            .Equals(x => x.FirstName, filter.FirstName)   // Ignored
-            .And.Equals(x => x.LastName, filter.LastName)
-            .And.Equals(x => x.Gender, filter.Gender)
-            .And.Contains(x => x.Comment, filter.Comment) // Ignored
-            .And.In(x => x.Id, filter.Ids));              // Ignored
-    }*/
-}
 
-public class Filter
-{
-    public string FirstName { get; set; }
+        var query = Persons.Build(_ => _
+            .Equals(x => x.LastName, filter.LastName)
+            .And.Conditional(boolean).Where(x => x.DateOfBirth < filter.DateOfBirth));
 
-    public string LastName { get; set; }
+        var lastName = filter.LastName.Trim().ToLower();
 
-    public string Comment { get; set; }
+        if (boolean)
+        {
+            query.Should().BeEquivalentTo(
+                Persons.Where(x =>
+                    x.LastName.ToLower().Equals(lastName) && x.DateOfBirth < filter.DateOfBirth));
+        }
+        else
+        {
+            query.Should().BeEquivalentTo(
+                Persons.Where(x =>
+                    x.LastName.ToLower().Equals(lastName)));
+        }
+    }
 
-    public DateTime? Birthdate { get; set; }
+    [Fact]
+    public void Nested()
+    {
+        var filter = new Filter
+        {
+            LastName = "walker",
+        };
+        var query = Persons.Build(_ => _
+            .Equals(x => x.LastName, filter.LastName)
+            .Or.Any(x => x.Relatives, b => b.Equals(x => x.LastName, filter.LastName)));
 
-    public Gender? Gender { get; set; }
+        var lastName = filter.LastName.Trim().ToLower();
 
-    public List<int> Ids { get; set; }
-
-    public bool? HasRelatives { get; set; }
+        query.Should().BeEquivalentTo(Persons.Where(x =>
+            x.LastName.ToLower().Equals(lastName) ||
+            x.Relatives.Any(r => r.LastName.ToLower().Equals(lastName))));
+    }
 }
