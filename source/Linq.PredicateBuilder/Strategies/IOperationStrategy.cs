@@ -3,7 +3,7 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Constructs filtering methods.
+    /// Defines an interface of a predicate building strategy.
     /// </summary>
     public interface IOperationStrategy
     {
@@ -15,17 +15,6 @@
         /// <param name="input">The string to seek.</param>
         /// <typeparam name="TEntity">The entity type.</typeparam>
         Expression<Func<TEntity, bool>>? Contains<TEntity>(
-            Expression<Func<TEntity, string>> propertyExpression,
-            string? input);
-
-        /// <summary>
-        /// Builds a predicate indicating whether a specified input value is equal to the value
-        /// defined by a property selector expression.
-        /// </summary>
-        /// <param name="propertyExpression">The property selector.</param>
-        /// <param name="input">The string to compare with.</param>
-        /// <typeparam name="TEntity">The entity type.</typeparam>
-        Expression<Func<TEntity, bool>>? StringEquals<TEntity>(
             Expression<Func<TEntity, string>> propertyExpression,
             string? input);
 
@@ -75,5 +64,26 @@
         Expression<Func<TEntity, bool>>? Where<TEntity, TInput>(
             Expression<Func<TEntity, TInput, bool>> predicate,
             TInput? input);
+
+        /// <summary>
+        /// Indicates whether the builder segment should be skipped.
+        /// </summary>
+        /// <param name="input">The input value to check against ignoring conditions.</param>
+        /// <typeparam name="TInput">The input value type.</typeparam>
+        bool SegmentIgnored<TInput>(TInput input);
+
+        /// <summary>
+        /// Preprocesses (trim, lowercase if needed) the input value before building a predicate segment.
+        /// </summary>
+        /// <param name="input">The value to use as a parameter.</param>
+        /// <typeparam name="TInput">The input value type.</typeparam>
+        TInput PreprocessInput<TInput>(TInput input);
+
+        /// <summary>
+        /// Preprocesses the value of selector expression.
+        /// </summary>
+        /// <param name="propertyExpression">The property selector.</param>
+        /// <typeparam name="TInput">The input value type.</typeparam>
+        Expression PreprocessSelector<TInput>(Expression propertyExpression);
     }
 }
