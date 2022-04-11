@@ -145,8 +145,8 @@
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
 
-            var expression = 
-                QueryableBuilderExtensions.CreateExpression(builder, new OperationStrategy())
+            var expression =
+                QueryableBuilderExtensions.BuildPredicate(builder)
                 ?? throw new NullReferenceException("Expression cannot be null.");
             Debug.WriteLine(expression.ToString());
 
