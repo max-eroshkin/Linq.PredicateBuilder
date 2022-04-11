@@ -19,7 +19,7 @@
         {
             return source.Build(
                 builder,
-                new OperationStrategy(BuilderOptions.Default));
+                null);
         }
 
         /// <summary>
@@ -32,9 +32,9 @@
         public static IQueryable<T> Build<T>(
             this IQueryable<T> source,
             Func<IAndOrOperator<T>, IResult<T>> builder,
-            IOperationStrategy strategy)
+            IOperationStrategy? strategy)
         {
-            var expression = CreateExpression(builder, strategy);
+            var expression = BuildPredicate(builder, strategy);
 
             return expression == null
                 ? source
@@ -59,17 +59,17 @@
         }
 
         /// <summary>
-        /// Filters a sequence of entities based on a predicate builder.
+        /// Creates a predicate based on a builder.
         /// </summary>
         /// <typeparam name="T">Entity type.</typeparam>
         /// <param name="builder">A predicate builder.</param>
         /// <param name="strategy">A filtering strategy.</param>
-        public static Expression<Func<T, bool>>? CreateExpression<T>(
+        public static Expression<Func<T, bool>>? BuildPredicate<T>(
             Func<IAndOrOperator<T>, IResult<T>> builder,
-            IOperationStrategy? strategy)
+            IOperationStrategy? strategy = null)
         {
             _ = builder ?? throw new ArgumentException("Builder cannot be null", nameof(builder));
-            _ = strategy ?? throw new ArgumentException("Strategy cannot be null", nameof(strategy));
+            strategy ??= new OperationStrategy(BuilderOptions.Default);
 
             var init = new BuilderInit<T>(strategy);
             var expression = builder(init).GetExpression();

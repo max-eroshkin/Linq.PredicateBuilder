@@ -19,18 +19,19 @@
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     <PropertyGroup>
-        <Version>1.0.0</Version>
+        <Version>1.1.0</Version>
         <Authors>Max Eroshkin</Authors>
         <Product>Linq.PredicateBuilder</Product>
-        <Description>Linq.PredicateBuilder allows you to construct filtering expressions in run-time using fluent API and minimize boilerplate code such as null/empty checking and case ignoring.</Description>
-        <PackageTags>Linq Where Filter Predicate Expression Fluent Builder</PackageTags>
+        <Description>Linq.PredicateBuilder allows you to construct filtering expressions at run-time on the fly using fluent API and minimize boilerplate code such as null/empty checking and case ignoring.</Description>
+        <PackageTags>Linq Predicate Expression Fluent Builder</PackageTags>
         <PackageId>Linq.PredicateBuilder</PackageId>
         <PackageProjectUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</PackageProjectUrl>
         <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Copyright>Copyright ©2022 Max Eroshkin</Copyright>
     </PropertyGroup>
 
