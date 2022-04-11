@@ -4,7 +4,9 @@
     using System.Linq.Expressions;
     using System.Reflection;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Represents a class of a predicate building strategy.
+    /// </summary>
     public class OperationStrategy : IOperationStrategy
     {
         private static readonly MethodInfo ToLowerMethod = typeof(string).GetMethods()

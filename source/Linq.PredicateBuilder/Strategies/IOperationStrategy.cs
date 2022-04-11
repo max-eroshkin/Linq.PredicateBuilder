@@ -3,7 +3,7 @@
     using System.Linq.Expressions;
 
     /// <summary>
-    /// Constructs filtering methods.
+    /// Defines an interface of a predicate building strategy.
     /// </summary>
     public interface IOperationStrategy
     {
