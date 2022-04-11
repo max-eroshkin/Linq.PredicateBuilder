@@ -28,7 +28,7 @@
         private readonly BuilderOptions _options;
 
         /// <summary>
-        /// Constructs a strategy,
+        /// Constructs a strategy.
         /// </summary>
         /// <param name="options">A filtering options.</param>
         public OperationStrategy(BuilderOptions options = BuilderOptions.Default)
@@ -47,36 +47,19 @@
             Expression<Func<TEntity, string>> propertyExpression,
             string? input)
         {
-            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
+            if (SegmentIgnored(input))
                 return null;
 
             _ = input ?? throw new ArgumentNullException(nameof(input), "Input cannot be null.");
 
-            var filter = Expression.Lambda<Func<TEntity, bool>>(
+            var predicate = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
-                    ToLower(propertyExpression.Body),
+                    PreprocessSelector<string>(propertyExpression.Body),
                     ContainsMethod,
-                    Expression.Constant(ToLower(input), typeof(string))),
+                    Expression.Constant(PreprocessInput(input), typeof(string))),
                 propertyExpression.Parameters);
 
-            return filter;
-        }
-
-        /// <inheritdoc />
-        public Expression<Func<TEntity, bool>>? StringEquals<TEntity>(
-            Expression<Func<TEntity, string>> propertyExpression,
-            string? input)
-        {
-            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
-                return null;
-
-            var filter = Expression.Lambda<Func<TEntity, bool>>(
-                Expression.Equal(
-                    ToLower(propertyExpression.Body),
-                    Expression.Constant(ToLower(input), typeof(string))),
-                propertyExpression.Parameters);
-
-            return filter;
+            return predicate;
         }
 
         /// <inheritdoc />
@@ -84,24 +67,16 @@
             Expression<Func<TEntity, TInput>> propertyExpression,
             TInput? input)
         {
-            if (IgnoreDefaults && Equals(input, default(TInput)))
+            if (SegmentIgnored(input))
                 return null;
 
-            if (typeof(TInput) == typeof(string))
-            {
-                return StringEquals(
-                    propertyExpression as Expression<Func<TEntity, string>>
-                    ?? throw new ArgumentException("Cannot convert expression.", nameof(propertyExpression)),
-                    input as string);
-            }
-
-            Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
+            var predicate = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Equal(
-                    propertyExpression.Body,
-                    Expression.Constant(input, typeof(TInput))),
+                    PreprocessSelector<TInput>(propertyExpression.Body),
+                    Expression.Constant(PreprocessInput(input), typeof(TInput))),
                 propertyExpression.Parameters);
 
-            return filter;
+            return predicate;
         }
 
         /// <inheritdoc />
@@ -112,27 +87,22 @@
             _ = propertyExpression ??
                 throw new ArgumentNullException(nameof(propertyExpression), "Expression cannot be null.");
 
-            if (IgnoreDefaults && input?.Any() != true)
+            if (SegmentIgnored(input))
                 return null;
 
             _ = input ?? throw new ArgumentNullException(nameof(input), "Input cannot be null.");
 
-            var inputParameter = Expression.Constant(
-                typeof(TInput) == typeof(string)
-                    ? (IEnumerable<TInput>)((IEnumerable<string>)input).Select(x => ToLower(x))
-                    : input);
+            var inputParameter = Expression.Constant(input.Select(PreprocessInput));
 
-            Expression<Func<TEntity, bool>> filter = Expression.Lambda<Func<TEntity, bool>>(
+            var predicate = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
                     null,
                     CollectionContainsMethod.MakeGenericMethod(typeof(TInput)),
                     inputParameter,
-                    typeof(TInput) == typeof(string)
-                        ? ToLower(propertyExpression.Body)
-                        : propertyExpression.Body),
+                    PreprocessSelector<TInput>(propertyExpression.Body)),
                 propertyExpression.Parameters);
 
-            return filter;
+            return predicate;
         }
 
         /// <inheritdoc />
@@ -148,7 +118,7 @@
 
             var anyMethod = AnyMethod.MakeGenericMethod(typeof(TInput));
 
-            Expression<Func<TEntity, bool>> result = Expression.Lambda<Func<TEntity, bool>>(
+            var result = Expression.Lambda<Func<TEntity, bool>>(
                 Expression.Call(
                     null,
                     anyMethod,
@@ -164,87 +134,74 @@
             Expression<Func<TEntity, TInput, bool>> predicate,
             TInput? input)
         {
-            if (IgnoreDefaults && Equals(input, default(TInput)))
+            if (SegmentIgnored(input))
                 return null;
 
-            if (IgnoreDefaults && input is IEnumerable enumerable)
+            var replacement = new Dictionary<ParameterExpression, Expression>
+            {
+                { predicate.Parameters.Last(), Expression.Constant(PreprocessInput(input), typeof(TInput)) }
+            };
+
+            var body = ParameterRebinder.ReplaceParameters(
+                replacement,
+                predicate.Body);
+
+            var result = Expression.Lambda<Func<TEntity, bool>>(
+                body,
+                predicate.Parameters.First());
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public bool SegmentIgnored<TInput>(TInput input)
+        {
+            if (!IgnoreDefaults)
+                return false;
+     
+            return input switch
+            {
+                null => true,
+                string val => string.IsNullOrWhiteSpace(val),
+                IEnumerable val => !EnumerableAny(val),
+                _ => input.Equals(default(TInput))
+            };
+
+            static bool EnumerableAny(IEnumerable enumerable)
             {
                 var enumerator = enumerable.GetEnumerator();
                 var disposable = enumerator as IDisposable;
                 try
                 {
-                    if (!enumerator.MoveNext())
-                        return null;
+                    return enumerator.MoveNext();
                 }
                 finally
                 {
                     disposable?.Dispose();
                 }
             }
+        }
 
-            if (typeof(TInput) == typeof(string))
+        /// <inheritdoc />
+        public TInput PreprocessInput<TInput>(TInput input)
+        {
+            return input switch
             {
-                return StringWhere(
-                    predicate as Expression<Func<TEntity, string, bool>>
-                    ?? throw new ArgumentException("Cannot convert expression.", nameof(predicate)),
-                    input as string);
-            }
-
-            var replacement = new Dictionary<ParameterExpression, Expression>
-            {
-                { predicate.Parameters.Last(), Expression.Constant(input, typeof(TInput)) }
+                string val => (TInput)(object)PreprocessString(val),
+                _ => input
             };
-
-            var body = ParameterRebinder.ReplaceParameters(
-                replacement,
-                predicate.Body);
-
-            var filter = Expression.Lambda<Func<TEntity, bool>>(
-                body,
-                predicate.Parameters.First());
-
-            return filter;
         }
 
-        /// <inheritdoc cref="Where{TEntity,TInput}"/>
-        private Expression<Func<TEntity, bool>>? StringWhere<TEntity>(
-            Expression<Func<TEntity, string, bool>> predicate,
-            string? input)
+        /// <inheritdoc />
+        public Expression PreprocessSelector<TInput>(Expression propertyExpression)
         {
-            _ = predicate ??
-                throw new ArgumentNullException(nameof(predicate), "Expression cannot be null");
-
-            if (IgnoreDefaults && string.IsNullOrWhiteSpace(input))
-                return null;
-
-            var replacement = new Dictionary<ParameterExpression, Expression>
-            {
-                { predicate.Parameters.Last(), Expression.Constant(ToLower(input), typeof(string)) }
-            };
-
-            var body = ParameterRebinder.ReplaceParameters(
-                replacement,
-                predicate.Body);
-
-            var filter = Expression.Lambda<Func<TEntity, bool>>(
-                body,
-                predicate.Parameters.First());
-
-            return filter;
+            return IgnoreCase && typeof(TInput) == typeof(string)
+                ? Expression.Call(propertyExpression, ToLowerMethod)
+                : propertyExpression;
         }
 
-        private Expression ToLower(Expression property)
+        private string PreprocessString(string input)
         {
-            return IgnoreCase
-                ? Expression.Call(property, ToLowerMethod)
-                : property;
-        }
-
-        private string? ToLower(string? input)
-        {
-            if (input == null)
-                return null;
-
             if (TrimStrings)
                 input = input.Trim();
 
