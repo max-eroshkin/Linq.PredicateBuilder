@@ -1,51 +1,57 @@
+using System;
 using System.Linq;
-using Bimlab.Nuke.Components;
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.Execution;
+using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-[CheckBuildProjectConfigurations]
-[UnsetVisualStudioEnvironmentVariables]
-[GitHubActions(
-    "CI",
-    GitHubActionsImage.Ubuntu1804,
-    OnPullRequestBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
-    OnPushBranches = new[] { "develop", "master", "release/**", "hotfix/**" },
-    InvokedTargets = new[] { nameof(Test) })]
-class Build : NukeBuild, IPublish
+class Build : NukeBuild
 {
-    public static int Main() => Execute<Build>(x => x.From<ICompile>().Compile);
+    public static int Main() => Execute<Build>(x => x.Compile);
 
-    [Solution("Linq.PredicateBuilder.sln")]
-    public readonly Solution Solution;
+    [Solution] [Required] public readonly Solution Solution;
 
-    Solution IHazSolution.Solution => Solution;
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    Target Clean => _ => _
-        .Before<IRestore>()
+    Target Restore => _ => _
         .Executes(() =>
         {
-            GlobDirectories(Solution.Directory, "**/bin", "**/obj")
-                .Where(x => !IsDescendantPath(BuildProjectDirectory, x))
-                .ForEach(DeleteDirectory);
+            DotNetRestore(cfg => cfg
+                .Apply(_ => _.SetProjectFile(Solution)));
+        });
+
+    Target Compile => _ => _
+        .DependsOn(Restore)
+        .Executes(() =>
+        {
+            DotNetBuild(cfg => cfg
+                .SetProjectFile(Solution)
+                .SetConfiguration(Configuration));
+        });
+
+    Target Clean => _ => _
+        .Before(Restore)
+        .Executes(() =>
+        {
+            Solution.Directory.GlobDirectories("**/bin", "**/obj", "output", "artifacts")
+                .Where(x => !BuildProjectDirectory.Contains(x))
+                .ForEach(x => x.DeleteDirectory());
         });
 
     Target Test => _ => _
-        .DependsOn<ICompile>()
+        .DependsOn(Compile)
         .Executes(() =>
         {
             DotNetTest(s => s
                 .SetProjectFile(Solution)
-                .SetConfiguration(From<IHazConfiguration>().Configuration)
+                .SetConfiguration(Configuration)
                 .EnableNoBuild());
         });
-    
+
     T From<T>()
         where T : INukeBuild
         => (T)(object)this;
