@@ -8,16 +8,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <CodeAnalysisRuleSet>..\stylecop.ruleset</CodeAnalysisRuleSet>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
@@ -32,7 +25,7 @@
         <RepositoryUrl>https://github.com/max-eroshkin/Linq.PredicateBuilder</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Copyright>Copyright ©2022 Max Eroshkin</Copyright>
+        <Copyright>Copyright ©2026 Max Eroshkin</Copyright>
     </PropertyGroup>
 
 </Project>

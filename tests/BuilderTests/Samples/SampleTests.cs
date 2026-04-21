@@ -69,6 +69,32 @@ public class SampleTests
     }
 
     [Fact]
+    public void Between()
+    {
+        var query = Persons.Build(_ => _.Between(x => x.Id, 3, 6));
+
+        query.Should().BeEquivalentTo(
+            Persons.Where(x => x.Id >= 3 && x.Id <= 6));
+    }
+
+    [Fact]
+    public void BetweenSwappedBoundaries()
+    {
+        var query = Persons.Build(_ => _.Between(x => x.Id, 6, 3));
+
+        query.Should().BeEquivalentTo(
+            Persons.Where(x => x.Id >= 3 && x.Id <= 6));
+    }
+
+    [Fact]
+    public void BetweenIgnoring()
+    {
+        var query = Persons.Build(_ => _.Between(x => x.Id, null, 6));
+
+        query.Should().BeEquivalentTo(Persons);
+    }
+
+    [Fact]
     public void Precedence()
     {
         var filter = new Filter
