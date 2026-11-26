@@ -251,6 +251,8 @@ paket-files/
 .fake/
 
 .nuke/
+.fallout/temp/
+.fallout/build.schema.json
 
 # JetBrains Rider
 .idea/
